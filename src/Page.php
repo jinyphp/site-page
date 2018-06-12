@@ -8,18 +8,19 @@ use \Jiny\Core\Controllers\Controller;
  */
 class Page extends Controller
 {
-    // Application 인스턴스
-    private $Application;
+    
+
     public $Menu;
 
     public $viewData;
     public $viewFile;
 
-    public function __construct($app)
+    public function __construct($app=NULL)
     {
         // echo __CLASS__." 객체를 생성하였습니다.<br>";
         // 의존성주입, 상위 Application의 객체를 저장합니다.
-        $this->Application = $app;
+        $this->setApp($app);
+        //$this->Application = $app;
     }
 
     /**
@@ -28,8 +29,9 @@ class Page extends Controller
     public function index()
     {
         //echo __METHOD__."를 호출합니다.<br>";
+
         // 처리될 view 페이지의 경로
-        $this->viewFile = $this->getPath()."index";
+        $this->viewPath();
 
         // view로 전달되는 데이터 array
         $this->viewData = [
@@ -37,11 +39,13 @@ class Page extends Controller
             'id'=>$id
         ];
 
-        // 메뉴 객체를 생성합니다.
+        // 메뉴를 생성합니다.
+        // 인스턴스 Pool에 등록합니다.
         $this->Menu = new \Jiny\Menu\Menu($this->Application);
         $this->Application->Registry->set("Menu", $this->Menu);
 
         // 뷰 객체를 생성합니다.
+        // 페지이는 뷰로 처리합니다.
         $this->viewFactory($this);
 
         // 뷰처리를 생성합니다.
@@ -49,17 +53,6 @@ class Page extends Controller
 
         // 화면출력
         $this->View->show();
-    }
-
-    /**
-     * 정적 페이지의 파일 경로를 재생성합니다.
-     */
-    public function getPath()
-    {
-        foreach ($this->Application->_uri as $value) {
-            $path .= $value. DS;
-        }
-        return $path;
     }
 
 }
