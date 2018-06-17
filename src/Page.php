@@ -8,8 +8,9 @@ use \Jiny\Core\Controllers\Controller;
  */
 class Page extends Controller
 {
-    
-
+    /**
+     * 인스턴스
+     */
     public $Menu;
 
     public $viewData;
@@ -20,7 +21,6 @@ class Page extends Controller
         // echo __CLASS__." 객체를 생성하였습니다.<br>";
         // 의존성주입, 상위 Application의 객체를 저장합니다.
         $this->setApp($app);
-        //$this->Application = $app;
     }
 
     /**
@@ -30,14 +30,17 @@ class Page extends Controller
     {
         //echo __METHOD__."를 호출합니다.<br>";
 
+        // 컨트롤러
         // 처리될 view 페이지의 경로
         $this->viewPath();
 
         // view로 전달되는 데이터 array
-        $this->viewData = [
+        /*
+        $this->viewData['param'] = [
             'name'=>$name,
             'id'=>$id
         ];
+        */
 
         // 메뉴를 생성합니다.
         // 인스턴스 Pool에 등록합니다.
