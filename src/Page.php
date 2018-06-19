@@ -4,6 +4,8 @@ namespace Jiny\Pages;
 use \Jiny\Core\Controllers\Controller;
 
 /**
+ * jiny 
+ * 페이지를 처리합니다. 페이지는 기본 컨트롤러 입니다.
  * Core Controller를 상속받습니다.
  */
 class Page extends Controller
@@ -18,20 +20,23 @@ class Page extends Controller
 
     public function __construct($app=NULL)
     {
-        // echo __CLASS__." 객체를 생성하였습니다.<br>";
-        // 의존성주입, 상위 Application의 객체를 저장합니다.
-        $this->setApp($app);
+        // \TimeLog::set(__CLASS__."가 생성이 되었습니다.");
+
+        // 의존성 주입
+        // 호출된 Application 클래스의 인스턴스르 저장합니다.
+
+        $this->setApp($app);    //controller
     }
 
     /**
-     * 페이지 기본 매서드
+     * 기본 호출 메서드
+     * Application 에서 호출시 선택되는 기본값 입니다.
      */
     public function index()
     {
-        //echo __METHOD__."를 호출합니다.<br>";
+        // \TimeLog::set(__METHOD__);
 
-        // 컨트롤러
-        // 처리될 view 페이지의 경로
+          // 처리될 view 페이지의 경로
         $this->viewPath();
 
         // view로 전달되는 데이터 array
@@ -56,6 +61,15 @@ class Page extends Controller
 
         // 화면출력
         $this->View->show();
+    }
+
+    /**
+     * 페이지를 처리할 기본 경로를 반환합니다.
+     */
+    public function pagePath()
+    {
+        $this->viewFile = $this->getPath();
+        return $this->viewFile;
     }
 
 }
