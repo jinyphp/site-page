@@ -4,7 +4,7 @@ namespace Jiny\Pages;
 use \Jiny\Core\Controllers\Controller;
 
 /**
- * jiny 
+ * jiny
  * 페이지를 처리합니다. 페이지는 기본 컨트롤러 입니다.
  * Core Controller를 상속받습니다.
  */
@@ -18,9 +18,6 @@ class PageController extends Controller
 
     public function __construct($app=NULL)
     {
-        \TimeLog::set(__CLASS__."가 생성이 되었습니다.");
-        //echo "페이지 컨트롤러가 생성되었습니다.<br>";
-
         // 의존성 주입
         $this->setApp($app);
     }
@@ -31,25 +28,36 @@ class PageController extends Controller
      */
     public function index()
     {
-        \TimeLog::set(__METHOD__);
-        // echo "페이지 컨트롤러<br>";
 
-        if ($this->App->Route->_viewFile) {
-            $viewFile = $this->App->Route->_viewFile;
+        if ($this->App->_viewFile) {
+            // 라우터에 의해서 뷰파일이 지정된 경우
+            $viewFile = $this->App->_viewFile;
         } else {
-            // 처리될 페이지 경로
+            // 리소스 페이지 결로파일.
             $viewFile = $this->getPath();
         }
 
         // 메뉴 데이터를 읽어옵니다.
         $viewData['menus'] = menu();
+        if ($viewFile) {
 
-        if ($ret = view($viewFile, $viewData)) {
-            return $ret;
+            if ($screen = view($viewFile, $viewData)) {
+                return $screen;
+            } else {
+                return $this->error_404("404 페이지가 없습니다. from pages!");
+            }
         } else {
-            echo "404 페이지가 없습니다. from pages!";
+            return $this->error_404("viewFile 값이 없습니다.<br>");
         }
 
+
+    }
+
+    function error_404($msg)
+    {
+        // 메뉴 데이터를 읽어옵니다.
+        $viewData['menus'] = menu();
+        return view("/404", $viewData);
     }
 
 }
