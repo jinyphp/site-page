@@ -1,4 +1,12 @@
 <?php
+/*
+ * This file is part of the jinyPHP package.
+ *
+ * (c) hojinlee <infohojin@gmail.com>
+ *
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
+ */
 namespace Jiny\Pages;
 
 use \Jiny\Core\Controllers\Controller;
@@ -14,10 +22,12 @@ class FormController extends Controller
     public $viewData;
     public $viewFile;
 
+
+    /**
+     *  초기화, 의존성 주입 
+     */
     public function __construct($app=NULL)
     {
-        \TimeLog::set(__CLASS__."가 생성이 되었습니다.");
-
         // 의존성 주입
         $this->setApp($app);
     }
@@ -28,17 +38,10 @@ class FormController extends Controller
      */
     public function index()
     {
-        \TimeLog::set(__METHOD__);
-        // echo "페이지 컨트롤러<br>";
 
-        if ($this->App->Route->_viewFile) {
-            $viewFile = $this->App->Route->_viewFile;
-        } else {
-            // 처리될 페이지 경로
-            $viewFile = $this->getPath();
-        }
-
-        return $this->view($viewFile);
     }
 
+    /**
+     * 
+     */
 }

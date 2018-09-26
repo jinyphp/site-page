@@ -1,8 +1,8 @@
 {
     "name": "jiny/pages",
-    "description": "jiny Pages controllers",
+    "description": "jinyPHP Pages CMS",
     "keywords": [
-        "jiny",
+        "jinyPHP",
         "framwork",
         "pages"
     ],
