@@ -17,29 +17,36 @@ trait Trans
     private function trans_init()
     {
         // 번역지원 모드
-        if($this->trans) {
-            $path = resource_path('trans');
-            $this->message = polyglot($path);
+        if(function_exists("polyglot")) {
+            if($this->trans) {
+                $path = resource_path('trans');
+                $this->message = polyglot($path);
+            }
         }
     }
 
     private function trans($text)
     {
-        if($this->trans && $text[0] !== "|") {
-            $src = $text;
-            $text = $this->message->echo($text, $this->language); // 번역
+        // 번역지원 모드
+        if(function_exists("polyglot")) {
+            if($this->trans && $text[0] !== "|") {
+                $src = $text;
+                $text = $this->message->echo($text, $this->language); // 번역
 
-            // 관리자 : trans popup
-          
-            if($this->transMode) {
-                $text = CDiv($text)
-                    ->addClass('polyglot')
-                    ->setAttribute('wire:click',"$"."emit('popupTransOpen','$src')")
-                    //->setAttribute('wire:click',"popupTransOpen('$src')")
-                    ->toString();
+                // 관리자 : trans popup
+
+                if($this->transMode) {
+                    $text = CDiv($text)
+                        ->addClass('polyglot')
+                        ->setAttribute('wire:click',"$"."emit('popupTransOpen','$src')")
+                        //->setAttribute('wire:click',"popupTransOpen('$src')")
+                        ->toString();
+                }
+
             }
-           
+            return $text;
+        } else {
+            return $text;
         }
-        return $text;
     }
 }

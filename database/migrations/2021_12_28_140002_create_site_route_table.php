@@ -22,6 +22,10 @@ class CreateSiteRouteTable extends Migration
             $table->string('type')->nullable(); // view, post, markdown
             $table->string('page')->nullable();
 
+            $table->string('title')->nullable();
+
+            // 조회수
+            $table->unsignedBigInteger('cnt')->default(0);
 
             $table->string('description')->nullable();
             // 작업자ID

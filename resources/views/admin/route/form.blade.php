@@ -31,17 +31,20 @@
             <x-form-hor>
                 <x-form-label>타입</x-form-label>
                 <x-form-item>
-                    {!! xTextarea()
+                    {!! xSelect()
+                        ->option("정적리소스",'view')
+                        ->option("마크다운",'markdown')
+                        ->option("포스트",'post')
                         ->setWire('model.defer',"form.type")
                     !!}
                 </x-form-item>
             </x-form-hor>
 
             <x-form-hor>
-                <x-form-label>페이지</x-form-label>
+                <x-form-label>타이틀</x-form-label>
                 <x-form-item>
-                    {!! xTextarea()
-                        ->setWire('model.defer',"form.page")
+                    {!! xInputText()
+                        ->setWire('model.defer',"form.title")
                     !!}
                 </x-form-item>
             </x-form-hor>

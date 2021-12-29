@@ -35,6 +35,9 @@ class PageView extends Controller
         }
 
         if($this->permit['read']) {
+            // 조회수 카운트
+            //dd($this->actions['route']['uri']);
+            DB::table("site_route")->where('route',"/".$this->actions['route']['uri'])->increment('cnt');
 
         } else {
             // 권한없음

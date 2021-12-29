@@ -21,7 +21,11 @@ class JinyPageServiceProvider extends ServiceProvider
         // 데이터베이스
         $this->loadMigrationsFrom(__DIR__.'/../database/migrations');
 
-        $this->configureComponents();
+
+        /* 컴포넌트 클래스 등록 */
+        $this->loadViewComponentsAs($this->package, [
+
+        ]);
 
         ## 테마를 선택하고 app과 컨덴츠를 결합합니다.
         Blade::component(\Jiny\Pages\View\Components\Markdown::class, "markdown");
@@ -36,16 +40,13 @@ class JinyPageServiceProvider extends ServiceProvider
             Livewire::component('LiveTrans', \Jiny\Pages\Http\Livewire\LiveTrans::class);
 
             Livewire::component('setPageRule', \Jiny\Pages\Http\Livewire\SetPageRule::class);
+            Livewire::component('setPostRule', \Jiny\Pages\Http\Livewire\SetPostRule::class);
+
+            // 404 페이지 추가 popup
+            Livewire::component('AddPopupPage', \Jiny\Pages\Http\Livewire\AddPopupPage::class);
         });
     }
 
-    protected function configureComponents()
-    {
-        /* 컴포넌트 클래스 등록 */
-        $this->loadViewComponentsAs($this->package, [
 
-        ]);
-
-    }
 
 }

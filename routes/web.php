@@ -3,6 +3,7 @@ use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Http\Request;
 
+
 if(!function_exists("siteRoute")) {
     function siteRoute($uri) {
         $row = DB::table('site_route')
@@ -23,17 +24,37 @@ if(isset($_SERVER['PATH_INFO'])) {
             Route::middleware(['web'])
                 ->name( str_replace("/",".",$_SERVER['PATH_INFO']).".")
                 ->group(function () use ($row){
-                    Route::get($_SERVER['PATH_INFO'],[
-                        Jiny\Pages\Http\Controllers\PageView::class,
-                        "index"
-                    ]);
+
+                    $type = parserKey($row->type);
+                    if($type == "view") {
+                        Route::get($_SERVER['PATH_INFO'],[
+                            Jiny\Pages\Http\Controllers\PageView::class,
+                            "index"
+                        ]);
+                    } else if($type == "markdown") {
+                        Route::get($_SERVER['PATH_INFO'],[
+                            Jiny\Pages\Http\Controllers\MarkdownView::class,
+                            "index"
+                        ]);
+                    } else if($type == "post") {
+                        Route::get($_SERVER['PATH_INFO'],[
+                            Jiny\Pages\Http\Controllers\PostView::class,
+                            "index"
+                        ]);
+                    }
+
+
+
                 });
 
         }
     }
 }
 
-
+Route::fallback(function () {
+    //middleware(['web'])->
+    return view("errors.404"); // template should exists
+})->middleware('web');
 
 
 /**
