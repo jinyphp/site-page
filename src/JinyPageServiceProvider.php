@@ -40,10 +40,10 @@ class JinyPageServiceProvider extends ServiceProvider
             Livewire::component('LiveTrans', \Jiny\Pages\Http\Livewire\LiveTrans::class);
 
             Livewire::component('setPageRule', \Jiny\Pages\Http\Livewire\SetPageRule::class);
+            Livewire::component('setMarkRule', \Jiny\Pages\Http\Livewire\SetMarkRule::class);
             Livewire::component('setPostRule', \Jiny\Pages\Http\Livewire\SetPostRule::class);
 
-            // 404 페이지 추가 popup
-            Livewire::component('AddPopupPage', \Jiny\Pages\Http\Livewire\AddPopupPage::class);
+
         });
     }
 

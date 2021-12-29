@@ -77,7 +77,7 @@ class PostView extends Controller
 
         if($row) {
             // 조회수 카운트
-            DB::table("site_route")->where('route',"/".$this->actions['route']['uri'])->increment('cnt');
+            DB::table("jiny_route")->where('route',"/".$this->actions['route']['uri'])->increment('cnt');
             return $row->{$this->actions['post_field']};
         } else {
             return "데이터가 없습니다.";

@@ -35,17 +35,17 @@ class MarkdownView extends Controller
         }
 
         if($this->permit['read']) {
-            if(isset($this->actions['view_content']) && $this->actions['view_content']) {
+            if(isset($this->actions['view_markdown']) && $this->actions['view_markdown']) {
                 $path = resource_path('markdown');
-                $filename = $path.DIRECTORY_SEPARATOR.$this->actions['view_content'].".md";
+                $filename = $path.DIRECTORY_SEPARATOR.$this->actions['view_markdown'].".md";
                 if(file_exists($filename)) {
                     $slot = file_get_contents($filename);
 
                     // 조회수 카운트
-                    DB::table("site_route")->where('route',"/".$this->actions['route']['uri'])->increment('cnt');
+                    DB::table("jiny_route")->where('route',"/".$this->actions['route']['uri'])->increment('cnt');
 
                 } else {
-                    $slot = $this->actions['view_content'].".md"."이 존재하지 않습니다.";
+                    $slot = $this->actions['view_markdown'].".md"."이 존재하지 않습니다.";
                 }
             } else {
                 $slot = "마크다운 파일을 설정해 주세요.";

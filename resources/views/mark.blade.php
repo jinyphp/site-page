@@ -7,7 +7,7 @@
         </x-markdown>
 
         {{-- Admin Rule Setting --}}
-        @include('jinypage::setPageRule')
+        @include('jinypage::setMarkRule')
 
     </x-theme-layout>
 </x-theme>
