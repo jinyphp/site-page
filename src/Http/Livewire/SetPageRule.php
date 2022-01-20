@@ -21,7 +21,7 @@ class SetPageRule extends Component
             $rules = json_decode(file_get_contents($filename), true);
 
             foreach ($rules as $key => $value) {
-                $this->form[$key] = $value;
+                $this->forms[$key] = $value;
             }
 
         }
@@ -47,17 +47,17 @@ class SetPageRule extends Component
         return view("jinypage::livewire.popup.rules");
     }
 
-    public $form = [];
+    public $forms = [];
     public function save()
     {
         //유효성 검사
         if (isset($this->actions['validate'])) {
-            $validator = Validator::make($this->form, $this->actions['validate'])->validate();
+            $validator = Validator::make($this->forms, $this->actions['validate'])->validate();
         }
 
-        $this->form['updated_at'] = date("Y-m-d H:i:s");
+        $this->forms['updated_at'] = date("Y-m-d H:i:s");
 
-        $json = json_encode($this->form,JSON_PRETTY_PRINT|JSON_UNESCAPED_UNICODE);
+        $json = json_encode($this->forms,JSON_PRETTY_PRINT|JSON_UNESCAPED_UNICODE);
         $path = resource_path("actions");
         if(!is_dir($path)) mkdir($path);
 

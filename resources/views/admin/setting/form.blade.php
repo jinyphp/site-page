@@ -19,7 +19,7 @@
                         }
                     @endphp
                     {!! xInputText()
-                        ->setWire('model.defer',"form.path")
+                        ->setWire('model.defer',"forms.path")
                         ->setWidth("standard")
                     !!}
                 </x-form-item>
@@ -30,7 +30,7 @@
                 <x-form-item>
 
                     {!! xInputText()
-                        ->setWire('model.defer',"form.menu")
+                        ->setWire('model.defer',"forms.menu")
                         ->setWidth("standard")
                     !!}
                 </x-form-item>
@@ -41,7 +41,7 @@
                 <x-form-item>
 
                     {!! xInputText()
-                        ->setWire('model.defer',"form.auth")
+                        ->setWire('model.defer',"forms.auth")
                         ->setWidth("standard")
                     !!}
                 </x-form-item>
@@ -65,7 +65,7 @@
                 <x-form-label>메모</x-form-label>
                 <x-form-item>
                     {!! xTextarea()
-                        ->setWire('model.defer',"form.description")
+                        ->setWire('model.defer',"forms.description")
                     !!}
                 </x-form-item>
             </x-form-hor>

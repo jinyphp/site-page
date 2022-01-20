@@ -21,7 +21,7 @@
                         <x-form-label>타이틀</x-form-label>
                         <x-form-item>
                             {!! xInputText()
-                                ->setWire('model.defer',"form.title")
+                                ->setWire('model.defer',"forms.title")
                             !!}
                         </x-form-item>
                     </x-form-hor>
@@ -30,7 +30,7 @@
                         <x-form-label>서브타이틀</x-form-label>
                         <x-form-item>
                             {!! xTextarea()
-                                ->setWire('model.defer',"form.subtitle")
+                                ->setWire('model.defer',"forms.subtitle")
                             !!}
                         </x-form-item>
                     </x-form-hor>
@@ -46,7 +46,7 @@
                         <x-form-label>post table</x-form-label>
                         <x-form-item>
                             {!! xInputText()
-                                ->setWire('model.defer',"form.post_table")
+                                ->setWire('model.defer',"forms.post_table")
                                 ->setWidth("standard")
                             !!}
                         </x-form-item>
@@ -56,7 +56,7 @@
                         <x-form-label>post Id</x-form-label>
                         <x-form-item>
                             {!! xInputText()
-                                ->setWire('model.defer',"form.post_id")
+                                ->setWire('model.defer',"forms.post_id")
                                 ->setWidth("standard")
                             !!}
                         </x-form-item>
@@ -66,7 +66,7 @@
                         <x-form-label>post field</x-form-label>
                         <x-form-item>
                             {!! xInputText()
-                                ->setWire('model.defer',"form.post_field")
+                                ->setWire('model.defer',"forms.post_field")
                                 ->setWidth("standard")
                             !!}
                         </x-form-item>
@@ -76,7 +76,7 @@
                         <x-form-label>seo Title</x-form-label>
                         <x-form-item>
                             {!! xInputText()
-                                ->setWire('model.defer',"form.seo_title")
+                                ->setWire('model.defer',"forms.seo_title")
                                 ->setWidth("standard")
                             !!}
                         </x-form-item>
@@ -86,7 +86,7 @@
                         <x-form-label>seo Keyword</x-form-label>
                         <x-form-item>
                             {!! xInputText()
-                                ->setWire('model.defer',"form.seo_keyword")
+                                ->setWire('model.defer',"forms.seo_keyword")
                                 ->setWidth("standard")
                             !!}
                         </x-form-item>
@@ -96,7 +96,7 @@
                         <x-form-label>seo description</x-form-label>
                         <x-form-item>
                             {!! xTextarea()
-                                ->setWire('model.defer',"form.seo_description")
+                                ->setWire('model.defer',"forms.seo_description")
                             !!}
                         </x-form-item>
                     </x-form-hor>
@@ -113,7 +113,7 @@
                         <x-form-label>Layout path</x-form-label>
                         <x-form-item>
                             {!! xInputText()
-                                ->setWire('model.defer',"form.view_layout")
+                                ->setWire('model.defer',"forms.view_layout")
                                 ->setWidth("standard")
                             !!}
                         </x-form-item>
@@ -123,7 +123,7 @@
                         <x-form-label>theme</x-form-label>
                         <x-form-item>
                             {!! xInputText()
-                                ->setWire('model.defer',"form.theme")
+                                ->setWire('model.defer',"forms.theme")
                                 ->setWidth("standard")
                             !!}
                         </x-form-item>
@@ -134,7 +134,7 @@
                         <x-form-item>
                             {!! xSelect()
                                 ->table('menus','code')
-                                ->setWire('model.defer',"form.menu")
+                                ->setWire('model.defer',"forms.menu")
                                 ->setWidth("medium")
                             !!}
                         </x-form-item>
@@ -151,7 +151,7 @@
                         <x-form-label>Role</x-form-label>
                         <x-form-item>
                             {!! xCheckbox()
-                                ->setWire('model.defer',"form.role")
+                                ->setWire('model.defer',"forms.role")
                             !!}
                             <div>사용자 Role권한을 적용합니다.</div>
                         </x-form-item>
@@ -178,27 +178,27 @@
                                 <td>{{$item->name}}</td>
                                 <td width='100'>
                                     {!! xCheckbox()
-                                        ->setWire('model.defer',"form.roles.".$item->name.".permit")
+                                        ->setWire('model.defer',"forms.roles.".$item->name.".permit")
                                     !!}
                                 </td>
                                 <td width='100'>
                                     {!! xCheckbox()
-                                        ->setWire('model.defer',"form.roles.".$item->name.".create")
+                                        ->setWire('model.defer',"forms.roles.".$item->name.".create")
                                     !!}
                                 </td>
                                 <td width='100'>
                                     {!! xCheckbox()
-                                        ->setWire('model.defer',"form.roles.".$item->name.".read")
+                                        ->setWire('model.defer',"forms.roles.".$item->name.".read")
                                     !!}
                                 </td>
                                 <td width='100'>
                                     {!! xCheckbox()
-                                        ->setWire('model.defer',"form.roles.".$item->name.".update")
+                                        ->setWire('model.defer',"forms.roles.".$item->name.".update")
                                     !!}
                                 </td>
                                 <td width='100'>
                                     {!! xCheckbox()
-                                        ->setWire('model.defer',"form.roles.".$item->name.".delete")
+                                        ->setWire('model.defer',"forms.roles.".$item->name.".delete")
                                     !!}
                                 </td>
                             </tr>
@@ -217,7 +217,7 @@
                         <x-form-label>메모</x-form-label>
                         <x-form-item>
                             {!! xTextarea()
-                                ->setWire('model.defer',"form.description")
+                                ->setWire('model.defer',"forms.description")
                             !!}
                         </x-form-item>
                     </x-form-hor>

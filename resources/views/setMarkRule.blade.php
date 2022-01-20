@@ -7,7 +7,7 @@
         Rule
     </x-button>
 
-    <x-button secondary href="/admin/pages/route">
+    <x-button secondary href="/admin/jiny/routes">
         route links
     </x-button>
 

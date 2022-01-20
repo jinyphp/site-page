@@ -13,7 +13,7 @@
                 <x-form-label>활성화</x-form-label>
                 <x-form-item>
                     {!! xCheckbox()
-                        ->setWire('model.defer',"form.enable")
+                        ->setWire('model.defer',"forms.enable")
                     !!}
                 </x-form-item>
             </x-form-hor>
@@ -22,7 +22,7 @@
                 <x-form-label>Route</x-form-label>
                 <x-form-item>
                     {!! xInputText()
-                        ->setWire('model.defer',"form.route")
+                        ->setWire('model.defer',"forms.route")
                         ->setWidth("standard")
                     !!}
                 </x-form-item>
@@ -35,7 +35,7 @@
                         ->option("정적리소스",'view')
                         ->option("마크다운",'markdown')
                         ->option("포스트",'post')
-                        ->setWire('model.defer',"form.type")
+                        ->setWire('model.defer',"forms.type")
                     !!}
                 </x-form-item>
             </x-form-hor>
@@ -44,7 +44,7 @@
                 <x-form-label>타이틀</x-form-label>
                 <x-form-item>
                     {!! xInputText()
-                        ->setWire('model.defer',"form.title")
+                        ->setWire('model.defer',"forms.title")
                     !!}
                 </x-form-item>
             </x-form-hor>
@@ -67,7 +67,7 @@
                 <x-form-label>메모</x-form-label>
                 <x-form-item>
                     {!! xTextarea()
-                        ->setWire('model.defer',"form.description")
+                        ->setWire('model.defer',"forms.description")
                     !!}
                 </x-form-item>
             </x-form-hor>

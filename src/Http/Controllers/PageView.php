@@ -5,11 +5,13 @@ namespace Jiny\Pages\Http\Controllers;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Route;
+use Illuminate\Support\Facades\Auth;
 
 use Jiny\Pages\Http\Controllers\Controller;
 class PageView extends Controller
 {
     use \Jiny\Table\Http\Livewire\Permit;
+    use \Jiny\Table\Http\Controllers\SetMenu;
 
     public function __construct()
     {
@@ -23,6 +25,11 @@ class PageView extends Controller
      */
     public function index(...$slug)
     {
+        // 메뉴 설정
+        $user = Auth::user();
+        $this->setUserMenu($user);
+
+
         if (isset($this->actions['view_layout'])) {
             $mainView = $this->actions['view_layout'];
         } else {

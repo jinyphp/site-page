@@ -13,7 +13,7 @@
                 <x-form-label>활성화</x-form-label>
                 <x-form-item>
                     {!! xCheckbox()
-                        ->setWire('model.defer',"form.enable")
+                        ->setWire('model.defer',"forms.enable")
                     !!}
                 </x-form-item>
             </x-form-hor>
@@ -22,7 +22,7 @@
                 <x-form-label>제목</x-form-label>
                 <x-form-item>
                     {!! xInputText()
-                        ->setWire('model.defer',"form.title")
+                        ->setWire('model.defer',"forms.title")
                         ->setWidth("standard")
                     !!}
                 </x-form-item>
@@ -32,7 +32,7 @@
                 <x-form-label>포스트</x-form-label>
                 <x-form-item>
                     {!! xTextarea()
-                        ->setWire('model.defer',"form.content")
+                        ->setWire('model.defer',"forms.content")
                     !!}
                 </x-form-item>
             </x-form-hor>
@@ -49,7 +49,7 @@
                 <x-form-label>제목</x-form-label>
                 <x-form-item>
                     {!! xInputText()
-                        ->setWire('model.defer',"form.seo_title")
+                        ->setWire('model.defer',"forms.seo_title")
                     !!}
                 </x-form-item>
             </x-form-hor>
@@ -58,7 +58,7 @@
                 <x-form-label>키워드</x-form-label>
                 <x-form-item>
                     {!! xInputText()
-                        ->setWire('model.defer',"form.seo_keyword")
+                        ->setWire('model.defer',"forms.seo_keyword")
                     !!}
                 </x-form-item>
             </x-form-hor>
@@ -67,7 +67,7 @@
                 <x-form-label>내용</x-form-label>
                 <x-form-item>
                     {!! xTextarea()
-                        ->setWire('model.defer',"form.seo_description")
+                        ->setWire('model.defer',"forms.seo_description")
                     !!}
                 </x-form-item>
             </x-form-hor>
@@ -84,7 +84,7 @@
                 <x-form-label>배포일자</x-form-label>
                 <x-form-item>
                     {!! xInputText()
-                        ->setWire('model.defer',"form.publish")
+                        ->setWire('model.defer',"forms.publish")
                     !!}
                 </x-form-item>
             </x-form-hor>
@@ -93,7 +93,7 @@
                 <x-form-label>담당자</x-form-label>
                 <x-form-item>
                     {!! xInputText()
-                        ->setWire('model.defer',"form.manager")
+                        ->setWire('model.defer',"forms.manager")
                     !!}
                 </x-form-item>
             </x-form-hor>
@@ -112,7 +112,7 @@
                 <x-form-label>메모</x-form-label>
                 <x-form-item>
                     {!! xTextarea()
-                        ->setWire('model.defer',"form.description")
+                        ->setWire('model.defer',"forms.description")
                     !!}
                 </x-form-item>
             </x-form-hor>
