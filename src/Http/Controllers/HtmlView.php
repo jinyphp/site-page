@@ -7,11 +7,9 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Route;
 
 use Jiny\Pages\Http\Controllers\Controller;
-class MarkdownView extends Controller
+class HtmlView extends Controller
 {
     use \Jiny\Table\Http\Livewire\Permit;
-
-    const UPLOAD = "pages";
 
     public function __construct()
     {
@@ -29,7 +27,7 @@ class MarkdownView extends Controller
         if (isset($this->actions['view_layout'])) {
             $mainView = $this->actions['view_layout'];
         } else {
-            $mainView = "jinypage::mark";
+            $mainView = "jinypage::html";
         }
 
         // 사이트 테마 지정
@@ -54,34 +52,21 @@ class MarkdownView extends Controller
         ]);
     }
 
-
     private function getContent()
     {
         $slot = [];
         // Actions 설정 파일 정보
         if(isset($this->actions['view_markdown']) && $this->actions['view_markdown']) {
-            $filename = resource_path(self::UPLOAD).DIRECTORY_SEPARATOR.$this->actions['view_markdown'].".md";
+            $filename = resource_path('markdown').DIRECTORY_SEPARATOR.$this->actions['view_markdown'].".htm";
             $slot []= $this->getMarkdown($filename);
         } else {
-            // 컨덴츠 확인하기
-            $rows = DB::table("jiny_pages_content")
-                ->where('route',"/".$this->actions['route']['uri'])
-                ->orderBy('pos',"asc")->get();
+            // 동적 라우트 테이블에서 확인하기
+            $rows = DB::table("jiny_pages_markdown")->where('route',"/".$this->actions['route']['uri'])->get();
 
             foreach($rows as $row) {
                 if($row && $row->path) {
-                    $filename = resource_path(self::UPLOAD).$row->path;
-
-                    if($row->type == "markdown") {
-                        $row->content = $this->getMarkdown($filename);
-                    } else if($row->type == "htm") {
-                        $row->content = $this->getMarkdown($filename);
-                    } else if($row->type == "blade") {
-                        $blade = str_replace(".blade.php","",$row->path);
-                        $row->blade = "pages".str_replace("/",".",$blade);
-                    }
-
-                    $slot []= $row;
+                    $filename = resource_path('html').$row->path;
+                    $slot []= $this->getMarkdown($filename);
                 }
             }
         }
@@ -91,21 +76,17 @@ class MarkdownView extends Controller
 
     private function getMarkdown($filename)
     {
-        //dd($filename);
         if(file_exists($filename)) {
             $slot = file_get_contents($filename);
 
             // 조회수 카운트
-            //DB::table("jiny_route")->where('route',"/".$this->actions['route']['uri'])->increment('cnt');
+            DB::table("jiny_route")->where('route',"/".$this->actions['route']['uri'])->increment('cnt');
 
         } else {
-            $slot = $filename."이 존재하지 않습니다.";
+            $slot = $this->actions['view_markdown'].".htm"."이 존재하지 않습니다.";
         }
 
         return $slot;
     }
-
-
-
 
 }

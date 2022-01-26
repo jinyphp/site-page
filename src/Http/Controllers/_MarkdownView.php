@@ -66,8 +66,15 @@ class MarkdownView extends Controller
             // 컨덴츠 확인하기
             $rows = DB::table("jiny_pages_content")
                 ->where('route',"/".$this->actions['route']['uri'])
-                ->orderBy('pos',"asc")->get();
+                ->orderBy('level',"desc")
+                ->orderBy('pos',"asc")
+                ->get();
 
+            //dd($rows);
+            $slot = $this->toTree($rows);
+            //dd($slot);
+
+            /*
             foreach($rows as $row) {
                 if($row && $row->path) {
                     $filename = resource_path(self::UPLOAD).$row->path;
@@ -84,6 +91,9 @@ class MarkdownView extends Controller
                     $slot []= $row;
                 }
             }
+            */
+
+
         }
 
         return $slot;
@@ -107,5 +117,38 @@ class MarkdownView extends Controller
 
 
 
+
+
+    private function toTree($rows)
+    {
+        $tree = [];
+
+        // 배열변환
+        foreach ($rows as $row) {
+            $id = $row->id;
+            foreach ($row as $key => $value) {
+                $tree[$id][$key] = $value;
+            }
+        }
+
+        //dd($tree);
+
+        // 계층이동
+        foreach($tree as $i => $item) {
+            if($item['level'] != 1) {
+                $ref = $item['ref'];
+                if($ref == 0) {
+                    //
+                } else {
+                    $tree[$ref]['sub'] []= $tree[$i];
+                    unset($tree[$i]);
+                }
+            }
+        }
+
+        //dd($tree);
+
+        return $tree;
+    }
 
 }
