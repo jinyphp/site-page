@@ -36,6 +36,8 @@ class JinyPageServiceProvider extends ServiceProvider
     {
         /* 라이브와이어 컴포넌트 등록 */
         $this->app->afterResolving(BladeCompiler::class, function () {
+            Livewire::component('PageContents', \Jiny\Pages\Http\Livewire\PageContents::class);
+
             Livewire::component('LiveMarkdown', \Jiny\Pages\Http\Livewire\LiveMarkdown::class);
             Livewire::component('LiveTrans', \Jiny\Pages\Http\Livewire\LiveTrans::class);
 

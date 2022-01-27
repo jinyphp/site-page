@@ -26,6 +26,13 @@ class CreateJinyPagesContentTable extends Migration
             $table->string('href')->nullable();
             $table->string('description')->nullable();
 
+            $table->string('element')->default('section');
+            $table->string('width')->nullable();
+            $table->string('height')->nullable();
+            $table->string('padding')->nullable();
+            $table->string('margin')->nullable();
+            $table->string('background')->nullable();
+
             $table->integer('pos')->default(0);
             $table->integer('ref')->default(0);
             $table->integer('level')->default(0);

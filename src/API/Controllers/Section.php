@@ -20,16 +20,25 @@ class Section extends Controller
         $uploaded = [];
         $uploaded['post'] = $_POST;
 
-        $rows = DB::table("jiny_pages_content")->where('path', $_POST['path'])->get();
-        if(count($rows) == 1) {
-            $path = resource_path(self::UPLOAD).$_POST['path'];
-            $uploaded['pathname'] = $path;
-            if(file_exists($path)) {
-                $uploaded['path'] = $path;
-                unlink($path);
-            } else {
-                $uploaded['message'] = "파일이 존재하지 않습니다.";
+        if(isset($_POST['path'])) {
+            $rows = DB::table("jiny_pages_content")->where('path', $_POST['path'])->get();
+        } else if(isset($_POST['id'])) {
+            $rows = DB::table("jiny_pages_content")->where('id', $_POST['id'])->get();
+        }
+
+        if($rows && count($rows) == 1) {
+            // 파일만 삭제, 섹션은 제외함
+            if($rows[0]->path) {
+                $path = resource_path(self::UPLOAD).$rows[0]->path; //$_POST['path'];
+                $uploaded['pathname'] = $path;
+                if(file_exists($path)) {
+                    $uploaded['path'] = $path;
+                    unlink($path);
+                } else {
+                    $uploaded['message'] = "파일이 존재하지 않습니다.";
+                }
             }
+
         }
 
         if($rows) {
@@ -49,6 +58,23 @@ class Section extends Controller
         foreach($_POST['pos'] as $id => $pos){
             DB::table("jiny_pages_content")->where('id', $id)->update(['pos'=>$pos]);
         }
+
+        return response()->json($uploaded);
+    }
+
+
+    public function move(Request $requet)
+    {
+        $uploaded = [];
+        $uploaded['post'] = $_POST;
+
+        DB::table("jiny_pages_content")
+            ->where('id', $_POST['id'])
+            ->update([
+                'ref'=>$_POST['ref'],
+                'level'=>$_POST['level'],
+                'pos'=>$_POST['pos']
+            ]);
 
         return response()->json($uploaded);
     }

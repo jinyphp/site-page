@@ -38,4 +38,5 @@ Route::middleware(['web'])
     ->group(function(){
         Route::post('/api/pages/delete',[Section::class,"delete"]);
         Route::post('/api/pages/pos',[Section::class,"pos"]);
+        Route::post('/api/pages/move',[Section::class,"move"]);
     });

@@ -5,6 +5,8 @@ namespace Jiny\Pages\Http\Controllers;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Route;
+use \Jiny\Html\CTag;
+use Jiny\Pages\Http\Parsedown;
 
 use Jiny\Pages\Http\Controllers\Controller;
 class MarkdownView extends Controller
@@ -39,18 +41,19 @@ class MarkdownView extends Controller
 
         // 권환 확인
         if($this->permit['read']) {
-            $slot = $this->getContent();
+            $pages = $this->getContent();
 
         } else {
             // 권한없음
             //$this->actions['view_content'] = "jinypage::error.permit";
             //$slot = "";
-            $slot = view("jinypage::error.permit");
+            $pages = view("jinypage::error.permit");
         }
+
 
         return view($mainView,[
             'actions'=>$this->actions,
-            'slot'=>$slot
+            'pages'=>$pages
         ]);
     }
 
@@ -68,25 +71,115 @@ class MarkdownView extends Controller
                 ->where('route',"/".$this->actions['route']['uri'])
                 ->orderBy('pos',"asc")->get();
 
-            foreach($rows as $row) {
-                if($row && $row->path) {
-                    $filename = resource_path(self::UPLOAD).$row->path;
-
-                    if($row->type == "markdown") {
-                        $row->content = $this->getMarkdown($filename);
-                    } else if($row->type == "htm") {
-                        $row->content = $this->getMarkdown($filename);
-                    } else if($row->type == "blade") {
-                        $blade = str_replace(".blade.php","",$row->path);
-                        $row->blade = "pages".str_replace("/",".",$blade);
-                    }
-
-                    $slot []= $row;
+            $tree = [];
+            // 배열변환
+            foreach ($rows as $row) {
+                $id = $row->id;
+                foreach ($row as $key => $value) {
+                    $tree[$id][$key] = $value;
                 }
             }
+
+            // 계층이동
+            foreach($tree as $i => $item) {
+                if($item['level'] != 1) {
+                    $ref = $item['ref'];
+                    if($ref == 0) {
+                        //
+                    } else {
+                        $tree[$ref]['sub'] []= $tree[$i];
+                        unset($tree[$i]);
+                    }
+                }
+            }
+
+            //dd($tree);
+            $slot = $this->makePage($tree);
+            return $slot;
+
+
+            /*
+            foreach($rows as $row) {
+
+            }
+            */
         }
 
         return $slot;
+    }
+
+    private function makePage($tree)
+    {
+        $slot = [];
+        foreach($tree as $item) {
+            $section = new CTag('section', true);
+            $section->addClass('element');
+            $section->setAttribute('data-pos', $item['pos']);
+            $section->setAttribute('data-path', $item['path']);
+            $section->setAttribute('data-id', $item['id']);
+            $section->setAttribute('data-level', $item['level']);
+            $section->setAttribute('data-ref', $item['ref']);
+
+            $inner = new CTag('div', true);
+            $inner->addClass('inner');
+
+            if(isset($item['sub'])) {
+                foreach($item['sub'] as $article) {
+                    $inner->addItem( $this->article($article) );
+                }
+            }
+
+            $section->addItem($inner);
+
+            $slot []= $section;
+        }
+        return $slot;
+    }
+
+    private function article($item)
+    {
+        $article = new CTag('article', true);
+        $article->addClass("widget element");
+
+        $article->setAttribute('data-pos', $item['pos']);
+        $article->setAttribute('data-path', $item['path']);
+        $article->setAttribute('data-id', $item['id']);
+        $article->setAttribute('data-level', $item['level']);
+        $article->setAttribute('data-ref', $item['ref']);
+
+        //dd($item);
+        if($item && $item['path']) {
+            $content = "";
+
+            $filename = resource_path(self::UPLOAD).$item['path'];
+
+            if($item['type'] == "markdown") {
+                $content = $this->getMarkdown($filename);
+
+                $Parsedown = new Parsedown();
+                $markdown = $Parsedown->parse($content);
+                $article->addHtml($markdown);
+
+            } else if($item['type'] == "html" || $item['type'] == "htm") {
+                //dd($filename);
+                $content = $this->getMarkdown($filename);
+                $article->addHtml($content);
+            } else if($item['type'] == "blade") {
+                $blade = str_replace(".blade.php","",$item['path']);
+                $item['blade'] = "pages".str_replace("/",".",$blade);
+                //dd($item['blade']);
+                $article->addHtml( view($item['blade']) );
+            } else if($item['type'] == "image") {
+                //dd($item['path']);
+                $img = new CTag('img', false);
+                //$filename = public_path(self::UPLOAD).$item['path'];
+                $img->setAttribute('src', "/images".$item['path'] );
+                $article->addItem( $img );
+            }
+
+        }
+
+        return $article;
     }
 
     private function getMarkdown($filename)
