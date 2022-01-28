@@ -68,12 +68,44 @@ class Section extends Controller
         $uploaded = [];
         $uploaded['post'] = $_POST;
 
-        DB::table("jiny_pages_content")
+        if($_POST['id'] == 0) {
+            $url = parse_url($_POST['_uri']);
+            $id = DB::table("jiny_pages_content")->insertGetId([
+                'enable'=>1,
+                'route'=>$url['path'],
+                'type'=>"html",
+                'ref'=>$_POST['ref'],
+                'level'=>$_POST['level'],
+                'pos'=>$_POST['pos']
+            ]);
+            $uploaded['id'] = $id;
+        } else {
+            DB::table("jiny_pages_content")
             ->where('id', $_POST['id'])
             ->update([
                 'ref'=>$_POST['ref'],
                 'level'=>$_POST['level'],
                 'pos'=>$_POST['pos']
+            ]);
+        }
+
+        return response()->json($uploaded);
+    }
+
+    public function resize(Request $requet)
+    {
+        $uploaded = [];
+        $uploaded['post'] = $_POST;
+
+        $width = intval(str_replace("px","",$_POST['width']));
+        $height = intval(str_replace("px","",$_POST['height']));
+
+
+        DB::table("jiny_pages_content")
+            ->where('id', $_POST['id'])
+            ->update([
+                'width'=>$width,
+                'height'=>$height
             ]);
 
         return response()->json($uploaded);

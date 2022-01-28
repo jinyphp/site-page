@@ -1,10 +1,11 @@
 <div>
-    <button wire:click="sectionOpen">수정</button>
+
 
     @if ($popupSection)
     <x-dialog-modal wire:model="popupSection" maxWidth="2xl">
         <x-slot name="content">
             {{ $sectionId }} 팝업 섹션 관리
+            @include('jinypage::livewire.contents.form')
         </x-slot>
 
         <x-slot name="footer">

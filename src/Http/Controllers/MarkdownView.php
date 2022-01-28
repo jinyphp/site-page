@@ -108,6 +108,8 @@ class MarkdownView extends Controller
         return $slot;
     }
 
+
+
     private function makePage($tree)
     {
         $slot = [];
@@ -120,17 +122,34 @@ class MarkdownView extends Controller
             $section->setAttribute('data-level', $item['level']);
             $section->setAttribute('data-ref', $item['ref']);
 
-            $inner = new CTag('div', true);
-            $inner->addClass('inner');
+                $inner = new CTag('div', true);
+                $inner->addClass('inner');
 
-            if(isset($item['sub'])) {
-                foreach($item['sub'] as $article) {
-                    $inner->addItem( $this->article($article) );
+                //section css
+                $style = "display:grid;";
+                if(isset($item['sub'])) {
+                    $style .= "grid-template-columns:";
+                    foreach($item['sub'] as $article) {
+                        /*
+                        $gridCell = new CTag('div', true);
+                        $gridCell->addClass('cell');
+                        $gridCell->addItem($this->article($article));
+
+                        $inner->addItem( $gridCell );
+                        */
+                        $inner->addItem( $this->article($article) );
+
+                        if($article['width']) {
+                            $style .= " ".$article['width']."px";
+                        } else {
+                            $style .= " 1fr";
+                        }
+                    }
+                    $style .= ";";
                 }
-            }
+                $inner->setAttribute('style', $style);
 
             $section->addItem($inner);
-
             $slot []= $section;
         }
         return $slot;
@@ -164,6 +183,7 @@ class MarkdownView extends Controller
                 //dd($filename);
                 $content = $this->getMarkdown($filename);
                 $article->addHtml($content);
+
             } else if($item['type'] == "blade") {
                 $blade = str_replace(".blade.php","",$item['path']);
                 $item['blade'] = "pages".str_replace("/",".",$blade);
@@ -174,9 +194,13 @@ class MarkdownView extends Controller
                 $img = new CTag('img', false);
                 //$filename = public_path(self::UPLOAD).$item['path'];
                 $img->setAttribute('src', "/images".$item['path'] );
+                $img->setAttribute('width',"100%");
                 $article->addItem( $img );
             }
 
+        } else {
+            // 소스 path 없음.
+            $article->addItem("컨덴츠를 설정해 주세요");
         }
 
         return $article;

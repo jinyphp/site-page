@@ -7,21 +7,33 @@
             /* Section */
             #widgets section.element {
                 padding: 5px;
-                background-color: #f9cc9d;
+                /* background-color: #f9cc9d; */
                 margin-bottom: 5px;
             }
+            /*
+            #widgets section.element.selected {
+                border: 1px solid red;
+                cursor: move;
+            }
+            */
+
 
             #widgets section.element:hover {
-                border: 2px solid #f9cc9d;
+                /*border: 2px solid #f9cc9d;*/
+                background-color: #f9cc9d;
             }
+
 
             #widgets section.element.dragging-target {
                 background-color: #fddd9b;
             }
 
+            /*
             #widgets section.element .inner {
-                display: flex;
+                display: grid;
+                grid-template-columns: 1fr 1fr 1fr 1fr 1fr;
             }
+            */
 
 
 
@@ -94,11 +106,19 @@
 
         </style>
 
+
+
+
         <form id="widgets">
             @foreach ($pages as $page)
                 {!! $page !!}
             @endforeach
         </form>
+
+
+
+
+
 
         <!-- widget 선택 및 사이즈 조정 -->
         <script>
@@ -124,15 +144,76 @@
                 return null;
             }
 
+            /*
+            function findSectionElement(target) {
+                while(1) {
+                    if(target.tagName == "SECTION" && target.classList.contains('element')) break;
+                    if(target.tagName == "MAIN") break;
+                    target = target.parentElement;
+                }
+
+                if(target.tagName == "SECTION" && target.classList.contains('element')) {
+                    return target;
+                }
+
+                return null;
+            }
 
 
+            let sections = dragWidgets.querySelectorAll('section.element');
+            let sectionSelected;
+            sections.forEach(el => {
+                el.addEventListener('click', function(e) {
+                    e.preventDefault();
+
+                    let target = e.target;
+                    target = findSectionElement(target);
+                    if(target) {
+                        console.log(target);
+
+                        if(sectionSelected) {
+                            //console.log("선택해제");
+                            //console.log(widgets.selected);
+                            sectionSelected.classList.remove('selected');
+
+
+                        }
+
+                        // 선택 재지정
+                        target.classList.add('selected');
+                        sectionSelected = target;
+
+                        // 사이드판넬 설정값 표시
+                        console.log(target);
+                        let url = "/api/pages/pannel/section/" + target.dataset['id'];
+                        ajaxGet(url, function(data){
+                            offSideRight.innerHTML = data;
+                            let form = offSideRight.querySelector('form');
+
+                            ajaxSubmit(form, function(json){
+                                console.log(json);
+                            });
+                        });
+
+
+                    }
+
+
+                });
+            });
+
+            */
 
 
 
             let widgets = dragWidgets.querySelectorAll('.widget');
             widgets.forEach(el => {
-                el.addEventListener('click', function(e){
-                    e.preventDefault();
+                // 위젯 선텍
+                el.addEventListener('click', widgetResizeClickEvent);
+            });
+
+            function widgetResizeClickEvent(e) {
+                e.preventDefault();
 
                     let target = e.target;
                     target = findWidgetElement(target);
@@ -156,13 +237,22 @@
                         // --- resizer 등록 ---
                         addResizer(target);
 
+                        // 사이드판넬 설정값 표시
+                        console.log(target);
+                        let url = "/api/pages/pannel/section/" + target.dataset['id'];
+                        ajaxGet(url, function(data){
+                            offSideRight.innerHTML = data;
+                            let form = offSideRight.querySelector('form');
+
+                            ajaxSubmit(form, function(json){
+                                console.log(json);
+                            });
+                        });
 
 
 
                     }
-
-                });
-            });
+            }
 
 
             // 사이즈 조정
@@ -256,6 +346,38 @@
 
                         e.target.parentElement.setAttribute('draggable',"true");
 
+                        // resize 정보 저장
+                        console.log("resize 저장");
+                        console.log(e.target.parentElement);
+
+                        let targetElement = e.target.parentElement;
+
+                        let xhr = new XMLHttpRequest();
+                        xhr.open("POST", "/api/pages/resize");
+                        let data = new FormData();
+                        data.append('_token', token);
+
+                        data.append('id', targetElement.dataset['id']);
+                        data.append('width', targetElement.style.width);
+                        data.append('height', targetElement.style.height);
+
+                        xhr.onload = function() {
+                            var data = JSON.parse(this.responseText);
+                            console.log(data);
+
+                            // 페이지 갱신
+                            //location.reload();
+
+                            //console.log("테이블 갱신요청");
+                            // 라이브와이어 테이블 갱신
+                            //Livewire.emit('refeshTable');
+                        }
+
+                        xhr.send(data);
+
+
+
+
                     }
                 }
             }
@@ -310,18 +432,153 @@
 
         </script>
 
+        @livewire('PageContextPopup')
         <!-- context Menu -->
+        @push("scripts")
         <script>
-            dragWidgets.addEventListener('contextmenu', function(e){
-                e.preventDefault();
-                console.log('context click');
-                let target = e.target;
-                target = findWidgetElement(target);
-                if(target) {
-                    console.log(target);
+            // 섹션, 위젯 설정 contextMenu
+            window.addEventListener('load',function(e){
+                // page 작업영억에 contextMenu 추가...
+                _contextMenu(dragWidgets, function(e){
+                    let target = e.target;
+
+                    // 구성요소 타입 검출
+                    let section, widget;
+                    while(1) {
+                        if(target.classList.contains('element') && target.tagName == "SECTION") {
+                            section = target;
+                            break;
+                        }
+
+                        if(target.classList.contains('element') && target.tagName == "ARTICLE") {
+                            widget = target;
+                            // break;
+                        }
+
+                        if(target.tagName == "MAIN") return;
+                        target = target.parentElement;
+                    }
+
+                    // context에 추가할 ul 목록 생성
+                    let menu = document.createElement("ul");
+                    menu.classList.add('context-menu');
+
+                    // 위젯 삭제
+                    console.log("생성");
+                    if(widget) {
+                        console.log(widget);
+                        menu.appendChild( widgetDelete(widget) );
+                        menu.appendChild( setWidget(widget) );
+                    }
+
+                    menu.appendChild( setSection(section) );
+                    return menu;
+                });
+
+                function widgetDelete(widget) {
+                    //let li, link;
+                    let li = document.createElement("li");
+                    let link = document.createElement("a");
+                    link.innerHTML = "삭제";
+                    //link.href = "/apiadmin/easy/menu/"+menu_id+"/items/create?ref=" + id;
+                    li.appendChild(link);
+
+
+
+                    link.addEventListener('click', function(e){
+                        e.preventDefault();
+                        console.log('delete click');
+
+
+                        let xhr = new XMLHttpRequest();
+                        xhr.open("POST", "/api/pages/delete");
+                        let data = new FormData();
+                        data.append('_token', token);
+
+                        /*
+                        let target = e.target;
+                        while(!target.classList.contains('element')) {
+                            target = target.parentElement;
+                        }
+                        console.log(target);
+                        */
+                        //data.append('path', target.dataset['path']);
+                        //data.append('id', target.dataset['id']);
+                        let id = widget.dataset['id'];
+                        data.append('id', id);
+
+                        xhr.onload = function() {
+                            var data = JSON.parse(this.responseText);
+                            console.log(data);
+
+                            // 페이지 갱신
+                            location.reload();
+
+                            //console.log("테이블 갱신요청");
+                            // 라이브와이어 테이블 갱신
+                            //Livewire.emit('refeshTable');
+                        }
+
+                        xhr.send(data);
+
+
+                    });
+
+                    return li;
                 }
+
+                function setWidget(widget) {
+
+                    let li = document.createElement("li");
+                    let link = document.createElement("button");
+                    let id = widget.dataset['id'];
+
+                    link.innerHTML = id + "위젯 수정";
+                    //link.href = "#";
+                    link.setAttribute('wire:click', "$emit('sectionOpen')");
+                    link.setAttribute('id',"btn-livepopup-create");
+
+                    link.addEventListener("click",function(e){
+                        e.preventDefault();
+                        Livewire.emit('sectionOpen', id);
+                    });
+
+
+                    li.appendChild(link);
+                    return li;
+                }
+
+                // context: 섹션 수정버튼
+                function setSection(section) {
+
+                    let link = document.createElement("a");
+                    let id = section.dataset['id'];
+                    link.innerHTML = id + "섹션 설정";
+                    link.setAttribute('href',"javascript: void(0);");
+
+                    link.addEventListener("click",function(e){
+                        e.preventDefault();
+                        // 사이드판넬 설정값 표시
+                        let url = "/api/pages/pannel/section/" + id;
+                        ajaxGet(url, function(data){
+                            offSideRight.innerHTML = data;
+                            let form = offSideRight.querySelector('form');
+
+                            ajaxSubmit(form, function(json){
+                                console.log(json);
+                            });
+                        });
+                    });
+
+                    let li = document.createElement("li");
+                    li.appendChild(link);
+                    return li;
+                }
+
+                //
             });
         </script>
+        @endpush
 
 
         <!-- widget 드래그 이동 -->
@@ -339,10 +596,21 @@
             let dragStart, startWidget;
             let dragSelect;
             let dragPosition; //드래그할 위치 지정
-
+            let templateWidget;
             dragWidgets.addEventListener('dragstart', (e) => {
-                //console.log("drag start...");
+                console.log("drag start...");
                 //console.log(e.target);
+                if(e.target.classList.contains('template')) {
+                    console.log("템플릿 선택");
+                    dragStart = e.target.cloneNode(true);
+                    dragStart.classList.remove('template'); // 템플릿 중복 복사 방지
+                    dragStart.addEventListener('click', widgetResizeClickEvent);
+                    dragSelect = "widget";
+                    templateWidget = dragStart;
+                    return;
+                }
+
+
                 let target = e.target;
                 while(1) {
                     if(target.classList.contains('element')
@@ -619,10 +887,17 @@
                     let data = new FormData();
                     data.append('_token', token);
 
-                    data.append("id", dragStart.dataset['id']);
+                    if(templateWidget) {
+                        templateWidget = null; //초기화
+                        data.append("id", 0); // 새로입력
+                    } else {
+                        data.append("id", dragStart.dataset['id']);
+                    }
+
                     data.append("ref", dragStart.dataset['ref']);
                     data.append("level", dragStart.dataset['level']);
                     data.append("pos", dragStart.dataset['pos']);
+                    data.append('_uri', location.href);
 
 
 
@@ -847,6 +1122,112 @@
 
         {{-- Admin Rule Setting --}}
         @include('jinypage::setMarkRule')
+
+
+
+        <div>
+            <article class="widget element template" draggable="true">
+                텍스트
+            </article>
+        </div>
+        <script>
+            /*
+            let templates = document.querySelectorAll(".article.template");
+            templates.forEach(el=>{
+
+                el.addEventListener('dragstart', function(e){
+                    console.log(e.target);
+                });
+                el.addEventListener('dragenter', function(e){
+
+                });
+                el.addEventListener('dragover', function(e){
+                    e.preventDefault();
+                });
+                el.addEventListener('dragleave', function(e){
+
+                });
+                el.addEventListener('drop', function(e){
+                    e.preventDefault();
+                });
+                el.addEventListener('dragend', function(e){
+
+                });
+            });
+            */
+        </script>
+
+        <!-- 사이드 패널 -->
+        <script>
+            let offSideRight = document.createElement('div');
+            offSideRight.classList.add('off-side-right');
+            offSideRight.style.width = "300px";
+
+            document.querySelector('.wrapper').appendChild( offSideRight );
+
+
+            function ajaxGet(url, callback) {
+                // ajax 데이터 호출
+                fetch(url, {
+                    method: 'get'
+                })
+                .then(response => {
+                    return response.text();
+                })
+                .then(data => {
+                    callback(data);
+                });
+            }
+
+            function ajaxSubmit(form, callback) {
+                form.addEventListener('submit', function(e){
+                    e.preventDefault();
+                    console.log('ajax submit');
+
+                    let url = form.action;
+                    console.log("url=" + url);
+
+                    let formData = new FormData(form);
+                    let searchParams = new URLSearchParams();
+                    for(let pair of formData) {
+                        searchParams.append(pair[0], pair[1]);
+                        console.log("key=" + pair[0] + " , value=" + pair[1]);
+                    }
+
+                    fetch(url, {
+                        method:'post',
+                        body: searchParams
+                    }).then(function(response){
+                        return response.json();
+
+                    }).then(function(json){
+                        callback(json);
+                        //console.log(json);
+                        //Livewire.emit('refeshTable'); // 라이브와이어 테이블 갱신
+                        //modals.pop().remove(); //모달 제거
+
+                    }).catch(function(error){
+                        //console.log(error);
+                    });
+                });
+            }
+
+
+            /*
+            let url = "/api/pages/pannel/section";
+            ajaxGet(url, function(data){
+                offSideRight.innerHTML = data;
+                let form = offSideRight.querySelector('form');
+
+                ajaxSubmit(form, function(json){
+                    console.log(json);
+                });
+            });
+            */
+
+
+
+        </script>
 
     </x-theme-layout>
 </x-theme>
