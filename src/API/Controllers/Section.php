@@ -62,24 +62,39 @@ class Section extends Controller
         return response()->json($uploaded);
     }
 
-
+    /**
+     * widget,section 드래그 이동시
+     */
     public function move(Request $requet)
     {
         $uploaded = [];
         $uploaded['post'] = $_POST;
 
+        // 위젯 새로등록
         if($_POST['id'] == 0) {
             $url = parse_url($_POST['_uri']);
+
+            if(isset($_POST['type'])) {
+                $type = $_POST['type'];
+            } else {
+                $type = "html"; // 기본값
+            }
+
             $id = DB::table("jiny_pages_content")->insertGetId([
-                'enable'=>1,
-                'route'=>$url['path'],
-                'type'=>"html",
-                'ref'=>$_POST['ref'],
-                'level'=>$_POST['level'],
-                'pos'=>$_POST['pos']
+                'enable' => 1,
+                'route' => $url['path'],
+                'type' => $type,
+                'ref' => $_POST['ref'],
+                'level' => $_POST['level'],
+                'pos' => $_POST['pos'],
+
+                'created_at' => date("Y-m-d H:i:s"),
+                'updated_at' => date("Y-m-d H:i:s")
             ]);
             $uploaded['id'] = $id;
-        } else {
+        }
+        // 위젯 위치이동
+        else {
             DB::table("jiny_pages_content")
             ->where('id', $_POST['id'])
             ->update([
