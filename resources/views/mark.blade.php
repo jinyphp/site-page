@@ -735,9 +735,26 @@
                     inner.classList.add('inner');
                     section.appendChild(inner);
 
+                    templateWidget = section; // DB 저장
                     dragSelect = "section";
 
                     return section;
+                } else {
+                    dragStart = target.cloneNode(true); //템플릿 복사
+                    //dragStart.classList.remove('template'); // 중복 복사를 방지하지 위해서 클래스 제거
+                    //dragStart.addEventListener('click', widgetResizeClickEvent);
+                    /*
+                    let article = document.createElement('article');
+                    article.classList.add('element');
+                    article.classList.add('widget');
+                    article.setAttribute('draggable',"true");
+                    */
+
+                    console.log(dragStart);
+                    templateWidget = dragStart; // DB 저장
+                    dragSelect = "widget";
+
+                    return dragStart;
                 }
             }
 
@@ -749,13 +766,6 @@
                     console.log("템플릿 선택");
                     dragStart = _selectedTemplate(e.target);
                     console.log(dragStart);
-                    /*
-                    e.target.cloneNode(true);
-                    dragStart.classList.remove('template'); // 템플릿 중복 복사 방지
-                    dragStart.addEventListener('click', widgetResizeClickEvent);
-                    dragSelect = "widget";
-                    templateWidget = dragStart;
-                    */
                     return;
                 }
 
@@ -899,6 +909,7 @@
             dragWidgets.addEventListener('drop', (e) => {
                 e.preventDefault();
                 console.log('drop');
+                console.log(dragSelect);
 
                 if(dragSelect == "section") {
                     // 섹션 선택
@@ -996,8 +1007,10 @@
                         console.log("widget to section");
                         dragStart.setAttribute('data-ref', dragTarget.dataset['id']);
                         dragStart.setAttribute('data-level', parseInt(dragTarget.dataset['level']) + 1 );
+                        dragStart.setAttribute('data-pos', 1);
 
                         dragTarget.querySelector('.inner').appendChild(dragStart);
+                        console.log(dragTarget);
 
                     } else
                     // 위젯을 이동합니다.
@@ -1160,52 +1173,41 @@
                 });
 
                 function widgetDelete(widget) {
-                    //let li, link;
                     let li = document.createElement("li");
                     let link = document.createElement("a");
                     link.innerHTML = "삭제";
                     //link.href = "/apiadmin/easy/menu/"+menu_id+"/items/create?ref=" + id;
                     li.appendChild(link);
-
-
-
                     link.addEventListener('click', function(e){
                         e.preventDefault();
                         console.log('delete click');
 
+                        let confirm = window.confirm("delete widget?");
+                        if(confirm) {
+                            //ajax 호출
+                            let xhr = new XMLHttpRequest();
+                            xhr.open("POST", "/api/pages/delete");
+                            let data = new FormData();
+                            data.append('_token', token);
 
-                        let xhr = new XMLHttpRequest();
-                        xhr.open("POST", "/api/pages/delete");
-                        let data = new FormData();
-                        data.append('_token', token);
+                            let id = widget.dataset['id'];
+                            data.append('id', id);
 
-                        /*
-                        let target = e.target;
-                        while(!target.classList.contains('element')) {
-                            target = target.parentElement;
+                            xhr.onload = function() {
+                                var data = JSON.parse(this.responseText);
+                                console.log(data);
+
+                                // 페이지 갱신
+                                widget.remove();
+                                location.reload();
+
+                                //console.log("테이블 갱신요청");
+                                // 라이브와이어 테이블 갱신
+                                //Livewire.emit('refeshTable');
+                            }
+
+                            xhr.send(data);
                         }
-                        console.log(target);
-                        */
-                        //data.append('path', target.dataset['path']);
-                        //data.append('id', target.dataset['id']);
-                        let id = widget.dataset['id'];
-                        data.append('id', id);
-
-                        xhr.onload = function() {
-                            var data = JSON.parse(this.responseText);
-                            console.log(data);
-
-                            // 페이지 갱신
-                            location.reload();
-
-                            //console.log("테이블 갱신요청");
-                            // 라이브와이어 테이블 갱신
-                            //Livewire.emit('refeshTable');
-                        }
-
-                        xhr.send(data);
-
-
                     });
 
                     return li;
@@ -1289,6 +1291,18 @@
             });
         </script>
         @endpush
+
+        <script>
+            // section row grid 재정렬
+            /*
+            function _sectionGridReset(section) {
+                let style = "grid-template-columns:";
+                section.querySelectorAll('.element').forEach(el=>{
+                    if()
+                });
+            }
+            */
+        </script>
 
         {{-- dropzone --}}
         <div>
@@ -1375,7 +1389,7 @@
 
                     el.addEventListener('dragover', function(e){
                         e.preventDefault();
-
+                        if(dragStart) return;
                         let target = e.target;
                         while(!target.classList.contains("dropzone")) {
                             target = target.parentElement;
@@ -1473,6 +1487,8 @@
             }
         </style>
 
+
+
         <div class="flex flex-row">
             <div class="template" data-type="section" draggable="true">
                 <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" class="bi bi-layout-three-columns" viewBox="0 0 16 16">
@@ -1483,7 +1499,7 @@
                 </div>
             </div>
 
-            <div class="template">
+            <div class="widget element template" data-type="html" draggable="true">
                 <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" class="bi bi-body-text" viewBox="0 0 16 16">
                     <path fill-rule="evenodd" d="M0 .5A.5.5 0 0 1 .5 0h4a.5.5 0 0 1 0 1h-4A.5.5 0 0 1 0 .5Zm0 2A.5.5 0 0 1 .5 2h7a.5.5 0 0 1 0 1h-7a.5.5 0 0 1-.5-.5Zm9 0a.5.5 0 0 1 .5-.5h5a.5.5 0 0 1 0 1h-5a.5.5 0 0 1-.5-.5Zm-9 2A.5.5 0 0 1 .5 4h3a.5.5 0 0 1 0 1h-3a.5.5 0 0 1-.5-.5Zm5 0a.5.5 0 0 1 .5-.5h5a.5.5 0 0 1 0 1h-5a.5.5 0 0 1-.5-.5Zm7 0a.5.5 0 0 1 .5-.5h3a.5.5 0 0 1 0 1h-3a.5.5 0 0 1-.5-.5Zm-12 2A.5.5 0 0 1 .5 6h6a.5.5 0 0 1 0 1h-6a.5.5 0 0 1-.5-.5Zm8 0a.5.5 0 0 1 .5-.5h5a.5.5 0 0 1 0 1h-5a.5.5 0 0 1-.5-.5Zm-8 2A.5.5 0 0 1 .5 8h5a.5.5 0 0 1 0 1h-5a.5.5 0 0 1-.5-.5Zm7 0a.5.5 0 0 1 .5-.5h7a.5.5 0 0 1 0 1h-7a.5.5 0 0 1-.5-.5Zm-7 2a.5.5 0 0 1 .5-.5h8a.5.5 0 0 1 0 1h-8a.5.5 0 0 1-.5-.5Zm0 2a.5.5 0 0 1 .5-.5h4a.5.5 0 0 1 0 1h-4a.5.5 0 0 1-.5-.5Zm0 2a.5.5 0 0 1 .5-.5h2a.5.5 0 0 1 0 1h-2a.5.5 0 0 1-.5-.5Z"/>
                 </svg>
@@ -1492,16 +1508,7 @@
                 </div>
             </div>
 
-            <div class="template" data-type="html" draggable="true">
-                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" class="bi bi-body-text" viewBox="0 0 16 16">
-                    <path fill-rule="evenodd" d="M0 .5A.5.5 0 0 1 .5 0h4a.5.5 0 0 1 0 1h-4A.5.5 0 0 1 0 .5Zm0 2A.5.5 0 0 1 .5 2h7a.5.5 0 0 1 0 1h-7a.5.5 0 0 1-.5-.5Zm9 0a.5.5 0 0 1 .5-.5h5a.5.5 0 0 1 0 1h-5a.5.5 0 0 1-.5-.5Zm-9 2A.5.5 0 0 1 .5 4h3a.5.5 0 0 1 0 1h-3a.5.5 0 0 1-.5-.5Zm5 0a.5.5 0 0 1 .5-.5h5a.5.5 0 0 1 0 1h-5a.5.5 0 0 1-.5-.5Zm7 0a.5.5 0 0 1 .5-.5h3a.5.5 0 0 1 0 1h-3a.5.5 0 0 1-.5-.5Zm-12 2A.5.5 0 0 1 .5 6h6a.5.5 0 0 1 0 1h-6a.5.5 0 0 1-.5-.5Zm8 0a.5.5 0 0 1 .5-.5h5a.5.5 0 0 1 0 1h-5a.5.5 0 0 1-.5-.5Zm-8 2A.5.5 0 0 1 .5 8h5a.5.5 0 0 1 0 1h-5a.5.5 0 0 1-.5-.5Zm7 0a.5.5 0 0 1 .5-.5h7a.5.5 0 0 1 0 1h-7a.5.5 0 0 1-.5-.5Zm-7 2a.5.5 0 0 1 .5-.5h8a.5.5 0 0 1 0 1h-8a.5.5 0 0 1-.5-.5Zm0 2a.5.5 0 0 1 .5-.5h4a.5.5 0 0 1 0 1h-4a.5.5 0 0 1-.5-.5Zm0 2a.5.5 0 0 1 .5-.5h2a.5.5 0 0 1 0 1h-2a.5.5 0 0 1-.5-.5Z"/>
-                </svg>
-                <div class="name">
-                    Html
-                </div>
-            </div>
-
-            <div class="template" data-type="markdown" draggable="true">
+            <div class="widget element template" data-type="markdown" draggable="true">
                 <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" class="bi bi-hash" viewBox="0 0 16 16">
                     <path d="M8.39 12.648a1.32 1.32 0 0 0-.015.18c0 .305.21.508.5.508.266 0 .492-.172.555-.477l.554-2.703h1.204c.421 0 .617-.234.617-.547 0-.312-.188-.53-.617-.53h-.985l.516-2.524h1.265c.43 0 .618-.227.618-.547 0-.313-.188-.524-.618-.524h-1.046l.476-2.304a1.06 1.06 0 0 0 .016-.164.51.51 0 0 0-.516-.516.54.54 0 0 0-.539.43l-.523 2.554H7.617l.477-2.304c.008-.04.015-.118.015-.164a.512.512 0 0 0-.523-.516.539.539 0 0 0-.531.43L6.53 5.484H5.414c-.43 0-.617.22-.617.532 0 .312.187.539.617.539h.906l-.515 2.523H4.609c-.421 0-.609.219-.609.531 0 .313.188.547.61.547h.976l-.516 2.492c-.008.04-.015.125-.015.18 0 .305.21.508.5.508.265 0 .492-.172.554-.477l.555-2.703h2.242l-.515 2.492zm-1-6.109h2.266l-.515 2.563H6.859l.532-2.563z"/>
                 </svg>
@@ -1510,7 +1517,7 @@
                 </div>
             </div>
 
-            <div class="template" data-type="image" draggable="true">
+            <div class="widget element template" data-type="image" draggable="true">
                 <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" class="bi bi-card-image" viewBox="0 0 16 16">
                     <path d="M6.002 5.5a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 3 0z"/>
                     <path d="M1.5 2A1.5 1.5 0 0 0 0 3.5v9A1.5 1.5 0 0 0 1.5 14h13a1.5 1.5 0 0 0 1.5-1.5v-9A1.5 1.5 0 0 0 14.5 2h-13zm13 1a.5.5 0 0 1 .5.5v6l-3.775-1.947a.5.5 0 0 0-.577.093l-3.71 3.71-2.66-1.772a.5.5 0 0 0-.63.062L1.002 12v.54A.505.505 0 0 1 1 12.5v-9a.5.5 0 0 1 .5-.5h13z"/>
@@ -1520,7 +1527,7 @@
                 </div>
             </div>
 
-            <div class="template" data-type="balde" draggable="true">
+            <div class="widget element template" data-type="balde" draggable="true">
                 <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" class="bi bi-code-slash" viewBox="0 0 16 16">
                     <path d="M10.478 1.647a.5.5 0 1 0-.956-.294l-4 13a.5.5 0 0 0 .956.294l4-13zM4.854 4.146a.5.5 0 0 1 0 .708L1.707 8l3.147 3.146a.5.5 0 0 1-.708.708l-3.5-3.5a.5.5 0 0 1 0-.708l3.5-3.5a.5.5 0 0 1 .708 0zm6.292 0a.5.5 0 0 0 0 .708L14.293 8l-3.147 3.146a.5.5 0 0 0 .708.708l3.5-3.5a.5.5 0 0 0 0-.708l-3.5-3.5a.5.5 0 0 0-.708 0z"/>
                 </svg>
