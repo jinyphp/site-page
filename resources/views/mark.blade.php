@@ -1,373 +1,641 @@
-{{-- 목록을 출력하기 위한 템플릿 --}}
 <x-theme>
     <x-theme-layout>
-        <br>
-        {{-- loading Spinner --}}
+        <!-- 요소 선택 스타일 -->
         <style>
-            .lds-dual-ring {
-                display: inline-block;
-                width: 80px;
-                height: 80px;
-            }
-            .lds-dual-ring:after {
-                content: " ";
-                display: block;
-                width: 64px;
-                height: 64px;
-                margin: 8px;
-                border-radius: 50%;
-                border: 6px solid #fff;
-                border-color: #fff transparent #fff transparent;
-                animation: lds-dual-ring 1.2s linear infinite;
-            }
-            @keyframes lds-dual-ring {
-                0% {
-                    transform: rotate(0deg);
-                }
-                100% {
-                    transform: rotate(360deg);
-                }
-            }
-
-        </style>
-
-        <style>
-            /* Section */
-            #widgets section.element {
-                /*padding: 5px;*/
-                /* background-color: #f9cc9d; */
-                /*margin-bottom: 5px;*/
-
-                position: relative;
-                border-left:2px solid #ccc;
-                min-height: 20px;
-            }
-
-            #widgets section.element .section-grap {
-                position: absolute;
-                top:0; left:-16px;
-            }
-
-            #widgets section.element:hover {
-                background-color: #f9cc9d;
-                border: 1px solid #f9cc9d;
-            }
-
-
-
-
-            /*
-            #widgets section.element.selected {
-                border: 1px solid red;
-                cursor: move;
-            }
-            */
-
-
-
-
-
-            #widgets section.element.dragging-target {
-                background-color: #fddd9b;
-            }
-
-            /*
-            #widgets section.element .inner {
-                display: grid;
-                grid-template-columns: 1fr 1fr 1fr 1fr 1fr;
-            }
-            */
-
-
-
-            /* Article 위젯*/
-            #widgets article.element {
-                /*flex-grow: 1;*/
-            }
-
-            #widgets article.element:hover {
-                border: 2px solid #8cb6c0;
-            }
-
-            #widgets article.element.selected {
+            #widgets .element.hovered {
                 position:relative;
                 border: 1px solid #116dff;
                 cursor: move;
+                margin:3px;
             }
 
+            #widgets section.element.hovered::before {
+                content: "Section";
+                position: absolute;
+                top:0; left:0;
+                background-color: #116dff;
+                color:white;
+                font-size:0.5rem;
+                padding: 2px 4px;
+            }
+
+            #widgets section.element .inner {
+                min-height: 30px;
+            }
+
+            #widgets article.element.hovered::before {
+                content: "Article";
+                position: absolute;
+                top:0; left:0;
+                background-color: #116dff;
+                color:white;
+                font-size:0.5rem;
+                padding: 2px 4px;
+            }
+        </style>
+
+        {{--resizer --}}
+        <style>
             #widgets .resizer {
                 position: absolute;
+                z-index: 3;
+            }
+
+            #widgets .resizer.nw {
                 width: 8px;
                 height: 8px;
                 border-radius: 50%;
                 border: 1px solid #116dff;
                 background-color: #fff;
-                z-index: 2;
-            }
 
-            #widgets .resizer.nw {
-                top: -4px;
-                left: -4px;
+                top: -4px; left: -4px;
                 cursor: nw-resize;
             }
 
             #widgets .resizer.ne {
-                top: -4px;
-                right: -4px;
+                width: 8px;
+                height: 8px;
+                border-radius: 50%;
+                border: 1px solid #116dff;
+                background-color: #fff;
+
+                top: -4px; right: -4px;
                 cursor: ne-resize;
             }
 
             #widgets .resizer.sw {
-                bottom: -4px;
-                left: -4px;
+                width: 8px;
+                height: 8px;
+                border-radius: 50%;
+                border: 1px solid #116dff;
+                background-color: #fff;
+
+                bottom: -4px; left: -4px;
                 cursor: sw-resize;
             }
 
             #widgets .resizer.se {
-                bottom: -4px;
-                right: -4px;
+                width: 8px;
+                height: 8px;
+                border-radius: 50%;
+                border: 1px solid #116dff;
+                background-color: #fff;
+
+                bottom: -4px; right: -4px;
                 cursor: se-resize;
             }
 
-            #widgets .resizer.right {
-                right: -4px;
-                cursor: ew-resize;
 
-                width: 8px;
-                height: 16px;
-                border-radius: 0;
+            /*margin*/
+            #widgets .resizer.margin-top {
+                width: 10px;
+                height: 4px;
+
+                top: -5px;
+                left: 10px;
+                cursor: nw-resize;
+                border: 1px solid #f9cc9d;
+                background-color: #f9cc9d;
             }
 
-            #widgets .resizer.bottom {
-                bottom: -4px;
-                cursor: ns-resize;
+            #widgets .resizer.margin-top-text {
+                top: -14px;
+                left: 10px;
 
-                width: 16px;
-                height: 8px;
-                border-radius: 0;
+                font-size: 0.5rem;
+                vertical-align: text-bottom;
+                color: #116dff;
+                border-left:1px dotted #116dff;
             }
+
+            #widgets .resizer.margin-right {
+                width: 4px;
+                height: 10px;
+
+                top: 15px;
+                right: -5px;
+                cursor: ne-resize;
+                border: 1px solid #f9cc9d;
+                background-color: #f9cc9d;
+            }
+
+            #widgets .resizer.margin-right-text {
+                top: 7px;
+                right: -13px;
+
+                font-size: 0.5rem;
+                color: #116dff;
+                border-bottom:1px dotted #116dff;
+            }
+
+            #widgets .resizer.margin-left {
+                width: 4px;
+                height: 10px;
+
+                bottom: 10px;
+                left: -5px;
+                cursor: sw-resize;
+                border: 1px solid #f9cc9d;
+                background-color: #f9cc9d;
+            }
+
+            #widgets .resizer.margin-left-text {
+                bottom: 10px;
+                left: -13px;
+
+                font-size: 0.5rem;
+                color: #116dff;
+                border-bottom:1px dotted #116dff;
+            }
+
+            #widgets .resizer.margin-bottom {
+                width: 10px;
+                height: 4px;
+
+                bottom: -5px;
+                right: 10px;
+                cursor: se-resize;
+                border: 1px solid #f9cc9d;
+                background-color: #f9cc9d;
+            }
+
+            #widgets .resizer.margin-bottom-text {
+                bottom: -14px;
+                right: 10px;
+
+                font-size: 0.5rem;
+                vertical-align: text-bottom;
+                color: #116dff;
+                border-right:1px dotted #116dff;
+            }
+
+            /*padding*/
+            #widgets .resizer.padding-top {
+                width: 10px;
+                height: 4px;
+
+                top: 0px;
+                right: 10px;
+                cursor: nw-resize;
+                border: 1px solid #c3d08b;
+                background-color: #c3d08b;
+            }
+
+            #widgets .resizer.padding-top-text {
+                top: -14px;
+                right: 10px;
+
+                font-size: 0.5rem;
+                vertical-align: text-bottom;
+                color: #116dff;
+                border-right:1px dotted #116dff;
+            }
+
+            #widgets .resizer.padding-right {
+                width: 4px;
+                height: 10px;
+
+                bottom: 15px;
+                right: 0px;
+                cursor: ne-resize;
+                border: 1px solid #c3d08b;
+                background-color: #c3d08b;
+            }
+
+            #widgets .resizer.padding-right-text {
+                bottom: 15px;
+                right: 0px;
+
+                font-size: 0.5rem;
+                color: #116dff;
+                border-bottom:1px dotted #116dff;
+            }
+
+            #widgets .resizer.padding-left {
+                width: 4px;
+                height: 10px;
+
+                top: 20px;
+                left: 0px;
+                cursor: sw-resize;
+                border: 1px solid #c3d08b;
+                background-color: #c3d08b;
+            }
+
+            #widgets .resizer.padding-left-text {
+                top: 20px;
+                left: 0px;
+
+                font-size: 0.5rem;
+                color: #116dff;
+                border-bottom:1px dotted #116dff;
+            }
+
+            #widgets .resizer.padding-bottom {
+                width: 10px;
+                height: 4px;
+
+                bottom: 0px;
+                left: 10px;
+                cursor: se-resize;
+                border: 1px solid #c3d08b;
+                background-color: #c3d08b;
+            }
+
+            #widgets .resizer.padding-bottom-text {
+                bottom: 0px;
+                left: 10px;
+
+                font-size: 0.5rem;
+                vertical-align: text-bottom;
+                color: #116dff;
+                border-left:1px dotted #116dff;
+            }
+
 
         </style>
 
+        <!-- 드래그 css -->
+        <style>
+            #widgets section.element.dragging-target {
+                background-color: #fddd9b;
+            }
+        </style>
 
-
-
+        {{-- 드래그 컨덴츠 --}}
         <form id="widgets">
             @foreach ($pages as $page)
                 {!! $page !!}
             @endforeach
         </form>
 
-
-
-
-
-
-        <!-- widget 선택 및 사이즈 조정 -->
         <script>
             let token = document.querySelector('input[name=_token]').value;
-            const dragWidgets = document.querySelector('main.content');
+            const dragResizes = document.querySelector('main.content');
 
-            window.widget = {
-                hover:null,
-                selected:null
-            }
-
-            function findWidgetElement(target) {
+            function _findTagClass(target, className) {
                 while(1) {
-                    if(target.classList.contains('element')) break;
+                    if(target.classList.contains(className)) return target;
                     if(target.tagName == "MAIN") break;
                     target = target.parentElement;
                 }
-
-                if(target.classList.contains('element')) {
-                    return target;
-                }
-
                 return null;
             }
 
-            /*
-            function findSectionElement(target) {
-                while(1) {
-                    if(target.tagName == "SECTION" && target.classList.contains('element')) break;
-                    if(target.tagName == "MAIN") break;
-                    target = target.parentElement;
-                }
+            // mouse hover를 이용한 요소 선택
+            let hoveredElement, selectedElement;
 
-                if(target.tagName == "SECTION" && target.classList.contains('element')) {
-                    return target;
-                }
+            dragResizes.addEventListener("mouseover",function(e){
+                e.preventDefault();
+                if(selectedElement) {
+                    // 선택한 요소가 있는 경우, 다른 hover 금지
+                } else {
+                    let element = _findTagClass(e.target, 'element');
+                    if(element && hoveredElement != element) { //동일선택 배제
 
-                return null;
-            }
-
-
-            let sections = dragWidgets.querySelectorAll('section.element');
-            let sectionSelected;
-            sections.forEach(el => {
-                el.addEventListener('click', function(e) {
-                    e.preventDefault();
-
-                    let target = e.target;
-                    target = findSectionElement(target);
-                    if(target) {
-                        console.log(target);
-
-                        if(sectionSelected) {
-                            //console.log("선택해제");
-                            //console.log(widgets.selected);
-                            sectionSelected.classList.remove('selected');
-
-
+                        // 이전에 hover한 값이 있는 경우,
+                        // 설정 클래스를 제거합니다.
+                        if(hoveredElement) {
+                            hoveredElement.classList.remove('hovered');
+                            if(hoveredElement.classList.contains('selected')) {
+                                hoveredElement.classList.remove('selected');
+                                //_removeResizer(hoveredElement);
+                            }
                         }
 
-                        // 선택 재지정
-                        target.classList.add('selected');
-                        sectionSelected = target;
-
-                        // 사이드판넬 설정값 표시
-                        console.log(target);
-                        let url = "/api/pages/pannel/section/" + target.dataset['id'];
-                        ajaxGet(url, function(data){
-                            offSideRight.innerHTML = data;
-                            let form = offSideRight.querySelector('form');
-
-                            ajaxSubmit(form, function(json){
-                                console.log(json);
-                            });
-                        });
-
-
+                        // 새로운 hover 설정
+                        hoveredElement = element;
+                        hoveredElement.classList.add('hovered');
                     }
-
-
-                });
+                }
             });
 
-            */
-
-
-
-            let widgets = dragWidgets.querySelectorAll('.widget');
-            widgets.forEach(el => {
-                // 위젯 선텍
-                el.addEventListener('click', widgetResizeClickEvent);
-            });
-
-            function widgetResizeClickEvent(e) {
+            // 클릭 제어모드 전환
+            dragResizes.addEventListener("click",function(e){
                 e.preventDefault();
 
-                    let target = e.target;
-                    target = findWidgetElement(target);
-                    if(target) {
+                if(selectedElement) {
+                    // selectedElement 토글
+                    selectedElement.classList.remove('selected');
+                    _removeResizer(selectedElement);
+                    selectedElement = null;
 
-                        //console.log(target);
+                    hoveredElement.classList.remove('hovered');
+                    hoveredElement = null; //토글 해제시, 다시 호버 선택 요구
 
-                        // 이전 선택값 해제
-                        if(widgets.selected) {
-                            //console.log("선택해제");
-                            //console.log(widgets.selected);
-                            widgets.selected.classList.remove('selected');
-                            removeResizer(widgets.selected);
-
-                        }
-
-                        // 선택 재지정
-                        target.classList.add('selected');
-                        widgets.selected = target;
-
-                        // --- resizer 등록 ---
-                        addResizer(target);
-
-                        // 사이드판넬 설정값 표시
-
-                        console.log(target);
-                        let url = "/api/pages/pannel/section/" + target.dataset['id'];
-                        ajaxGet(url, function(data){
-                            offSideRight.innerHTML = data;
-                            let form = offSideRight.querySelector('form');
-
-                            ajaxSubmit(form, function(json){
-                                console.log(json);
-                            });
-                        });
-
-
-
-
+                } else {
+                    if(hoveredElement) {
+                        selectedElement = hoveredElement;
+                        selectedElement.classList.add('selected');
+                        _resizer(selectedElement);
                     }
-            }
+                }
+            });
 
-
-            // 사이즈 조정
-            const dragResize = function(element) {
-
-                let resizers = element.querySelectorAll(".resizer");
-                let currentResizer; // 선택된 현재 조작점
-
-                for(let resizer of resizers) {
-                    resizer.addEventListener('mousedown', mousedown);
+            function _resizer(target) {
+                function __point(name) {
+                    let mt = document.createElement("div");
+                    mt.classList.add('resizer');
+                    mt.classList.add(name);
+                    return mt;
                 }
 
-                function mousedown(e) {
+                target.appendChild(__point('ne'));
+                target.appendChild(__point('nw'));
+                target.appendChild(__point('sw'));
+                target.appendChild(__point('se'));
+
+
+                target.appendChild(__point('margin-top'));
+                target.appendChild(__point('margin-top-text'));
+                target.appendChild(__point('margin-bottom'));
+                target.appendChild(__point('margin-bottom-text'));
+                target.appendChild(__point('margin-right'));
+                target.appendChild(__point('margin-right-text'));
+                target.appendChild(__point('margin-left'));
+                target.appendChild(__point('margin-left-text'));
+
+
+                target.appendChild(__point('padding-top'));
+                target.appendChild(__point('padding-top-text'));
+                target.appendChild(__point('padding-bottom'));
+                target.appendChild(__point('padding-bottom-text'));
+                target.appendChild(__point('padding-right'));
+                target.appendChild(__point('padding-right-text'));
+                target.appendChild(__point('padding-left'));
+                target.appendChild(__point('padding-left-text'));
+
+
+                _dragResize(target);
+            }
+
+            const _dragResize = function(element) {
+                let currentResizer; // 선택된 현재 조작점
+                let resizers = element.querySelectorAll(".resizer");
+
+                for(let resizer of resizers) {
+                    resizer.addEventListener('mousedown', __resizerDown);
+                }
+
+                function __resizerDown(e) {
                     console.log("start Resizing...");
                     e.preventDefault();
+
+                    // resizing 중에는 드래그 선택 잠시 중단.
+                    e.target.parentElement.setAttribute('draggable',"false");
+                    e.target.parentElement.classList.add('resizing');
 
                     currentResizer = e.target;
                     isResizing = true;
 
                     let prevX = e.clientX;
                     let prevY = e.clientY;
+                    let prevXX = e.clientX;
+                    let prevYY = e.clientY;
 
-                    // 드래그 중에는 잠시 숨김
-                    e.target.parentElement.querySelectorAll('.resizer').forEach(el=>{
-                        el.style.display = "none";
-                    });
+                    window.addEventListener('mousemove', __resizerMove);
+                    window.addEventListener('mouseup', __resizerUp);
+                    function __resizerMove(e) {
 
-                    // 드래그 선택 잠시 중단.
-                    e.target.parentElement.setAttribute('draggable',"false");
-
-
-
-
-                    window.addEventListener('mousemove', mousemove);
-                    window.addEventListener('mouseup', mouseup);
-                    function mousemove(e) {
                         const rect = element.getBoundingClientRect();
-                        if(currentResizer.classList.contains('right')) {
-                            //currentResizer.style.left = parseInt(element.offsetWidth/2-8) + "px";
-                            //console.log(parseInt(element.offsetWidth/2-8));
-                            //console.log(currentResizer);
+
+                        if(currentResizer.classList.contains('margin-top')) {
+                            element.style.marginTop = (e.clientY - prevYY) + "px";
+                            console.log("marginTop = " + element.style.marginTop);
+
+                            let value = element.querySelector('.margin-top-text');
+                            value.textContent = (e.clientY - prevYY);
+                            value.style.height = Math.abs(e.clientY - prevYY) + "px";
+
+                            value.style.padding = "0 3px";
+
+                            if((prevYY - e.clientY) < 0) {
+                                value.style.top = (prevYY - e.clientY) + "px";
+                                console.log("top="+value.style.top);
+
+                            } else {
+                                value.style.top = 0;
+                                console.log("top="+value.style.top);
+                            }
 
 
-                            element.style.width = rect.width - (prevX - e.clientX) + "px";
+
+                        } else
+                        if(currentResizer.classList.contains('margin-bottom')) {
+                            element.style.marginBottom = (prevYY-e.clientY) + "px";
+                            console.log("marginBottom= " + element.style.marginBottom)
+
+                            let value = element.querySelector('.margin-bottom-text');
+                            value.textContent = (prevYY-e.clientY);
+                            value.style.height = Math.abs(prevYY-e.clientY) + "px";
+
+                            value.style.padding = "0 3px";
+
+                            if((prevYY-e.clientY) < 0) {
+                                value.style.bottom = 0;
+                                console.log("bottom="+value.style.bottom);
+
+
+                            } else {
+                                //value.style.bottom = 0;
+                                value.style.bottom = "-" + (prevYY-e.clientY) + "px";
+                                console.log("bottom="+value.style.bottom);
+                            }
+
+                        } else
+                        if(currentResizer.classList.contains('margin-left')) {
+                            element.style.marginLeft = (e.clientX - prevXX) + "px";
+
+                            let value = element.querySelector('.margin-left-text');
+                            value.textContent = (e.clientX - prevXX);
+                            value.style.width = Math.abs(e.clientX - prevXX) + "px";
+
+                            value.style.padding = "0 3px";
+
+                            if((prevXX - e.clientX) < 0) {
+                                value.style.left = (prevXX - e.clientX) + "px";
+                                console.log("left="+value.style.left);
+                            } else {
+                                value.style.left = 1;
+                                console.log("left="+value.style.left);
+                            }
+
+
+                        } else
+                        if(currentResizer.classList.contains('margin-right')) {
+                            element.style.marginRight = (prevXX - e.clientX) + "px";
+
+                            let value = element.querySelector('.margin-right-text');
+                            value.textContent = (prevXX - e.clientX);
+                            value.style.width = Math.abs(prevXX - e.clientX) + "px";
+
+                            value.style.padding = "0 3px";
+
+                            if((prevXX - e.clientX) > 0) {
+                                value.style.right = "-" + (prevXX - e.clientX) + "px";
+                                console.log("right="+value.style.right);
+                            } else {
+                                value.style.right = 1;
+                                console.log("right="+value.style.right);
+                            }
+
                         }
-                        else
-                        if(currentResizer.classList.contains('bottom')) {
-                            /// e.target.style.top = parseInt(element.offsetHeight/2-8) + "px";
 
-                            //element.style.width = rect.width - (prevX - e.clientX) + "px";
-                            element.style.height = rect.height - (prevY - e.clientY) + "px";
+
+                        if(currentResizer.classList.contains('padding-top')) {
+
+                            let value = element.querySelector('.padding-top-text');
+                            if((e.clientY - prevYY) > 0) {
+                                let height = Math.abs(e.clientY - prevYY);
+                                element.style.paddingTop = height + "px";
+                                console.log("paddingTop = " + height);
+
+                                value.textContent = height;
+                                value.style.height = height + "px";
+                                value.style.padding = "0 3px";
+
+                                value.style.top = 0;
+                                console.log("top="+value.style.top);
+                            } else {
+                                value.textContent = "";
+                                value.style.height = "0px";
+                                value.style.padding = 0;
+                            }
+
+                        } else
+                        if(currentResizer.classList.contains('padding-bottom')) {
+                            //element.style.paddingBottom = (e.clientY - prevYY) + "px";
+                            //console.log("paddingBottom= " + element.style.paddingBottom);
+
+                            let value = element.querySelector('.padding-bottom-text');
+                            if((e.clientY - prevYY) < 0) {
+                                let height = Math.abs(e.clientY - prevYY);
+
+                                element.style.paddingBottom = height  + "px";
+                                console.log("paddingBottom = " + height );
+
+                                if(height == 0) {
+                                    value.textContent = "";
+                                    value.style.height = 0;
+
+                                } else if(height <16) {
+                                    value.textContent = height;
+                                    value.style.height = "16px";
+
+                                } else {
+                                    value.textContent = height ;
+                                    value.style.height = height  + "px";
+                                    value.style.padding = "0 3px";
+                                }
+
+                                value.style.bottom = 0;
+                                console.log("bottom="+value.style.top);
+                            } else {
+                                value.textContent = "";
+                                value.style.height = "0px";
+                                value.style.padding = 0;
+                            }
+
+
+                        } else
+                        if(currentResizer.classList.contains('padding-left')) {
+                            //element.style.paddingLeft = (e.clientX - prevXX) + "px";
+                            //console.log("paddingLeft = " + element.style.paddingLeft);
+                            let value = element.querySelector('.padding-left-text');
+                            if((e.clientX - prevXX) > 0) {
+                                let width = Math.abs(e.clientX - prevXX);
+
+                                element.style.paddingLeft = width + "px";
+                                console.log("paddingLeft = " + width);
+
+
+                                if(width == 0) {
+                                    value.textContent = "";
+                                    value.style.width = 0;
+
+                                } else if(width <16) {
+                                    value.textContent = width;
+                                    value.style.width = "16px";
+
+                                } else {
+                                    value.textContent = width;
+                                    value.style.width = Math.abs(e.clientX - prevXX) + "px";
+                                }
+
+                                value.style.padding = "0 3px";
+
+                                value.style.left = 0;
+                                console.log("left="+value.style.left);
+                            } else {
+                                value.textContent = "";
+                                value.style.padding = 0;
+                                value.style.width = 0;
+                            }
+
+                        } else
+                        if(currentResizer.classList.contains('padding-right')) {
+                            //element.style.paddingRight = (e.clientX - prevXX) + "px";
+                            //console.log("paddingRight = " + element.style.paddingRight);
+
+                            let value = element.querySelector('.padding-right-text');
+                            if((e.clientX - prevXX) < 0) {
+                                let width = Math.abs(e.clientX - prevXX);
+
+                                element.style.paddingRight = width + "px";
+                                console.log("paddingRight = " + width);
+
+
+                                if(width == 0) {
+                                    value.textContent = "";
+                                    value.style.width = 0;
+
+                                } else if(width <16) {
+                                    value.textContent = width;
+                                    value.style.width = "16px";
+
+                                } else {
+                                    value.textContent = width;
+                                    value.style.width = Math.abs(e.clientX - prevXX) + "px";
+                                }
+
+                                value.style.padding = "0 3px";
+
+                                value.style.right = 0;
+                                console.log("top="+value.style.right);
+                            } else {
+                                value.textContent = "";
+                                value.style.padding = 0;
+                                value.style.width = 0;
+                            }
                         }
-                        else
+
+
+
+
+
                         if(currentResizer.classList.contains('se')) {
+
                             element.style.width = rect.width - (prevX - e.clientX) + "px";
                             element.style.height = rect.height - (prevY - e.clientY) + "px";
+
                         }
 
-                        /*
+
                         else if(currentResizer.classList.contains('sw')) {
                             element.style.width = rect.width + (prevX - e.clientX) + "px";
                             element.style.height = rect.height - (prevY - e.clientY) + "px";
-                            element.style.paddingLeft= rect.left - (prevX - e.clientX) + "px";
+                            element.style.left = (prevX - e.clientX) + "px";
+
                         }
-                        */
+
+
+
                         /*
                         else if(currentResizer.classList.contains('ne')) {
                             element.style.width = rect.width - (prevX - e.clientX) + "px";
                             element.style.height = rect.height + (prevY - e.clientY) + "px";
                             element.style.top= rect.top - (prevY - e.clientY) + "px";
+
                         } else if(currentResizer.classList.contains('nw')) {
                             element.style.width = rect.width + (prevX - e.clientX) + "px";
                             element.style.height = rect.height + (prevY - e.clientY) + "px";
@@ -379,19 +647,22 @@
                         prevX = e.clientX;
                         prevY = e.clientY;
                     }
-                    function mouseup() {
-                        window.removeEventListener('mousemove',mousemove);
-                        window.removeEventListener('mouseup',mouseup);
+
+                    function __resizerUp() {
+                        window.removeEventListener('mousemove',__resizerMove);
+                        window.removeEventListener('mouseup',__resizerUp);
                         isResizing = false;
 
-                        // 다시 보이기
-                        e.target.parentElement.querySelectorAll('.resizer').forEach(el=>{
-                            el.style.display = "block";
-                        });
-
-                        e.target.parentElement.setAttribute('draggable',"true");
+                        // 드래그 이동 허용
+                        e.target.parentElement.setAttribute('draggable', "true");
+                        e.target.parentElement.classList.remove('resizing');
 
                         // resize 정보 저장
+                        //___saveResizeInfo();
+                    }
+
+                    function ___saveResizeInfo() {
+                        /*
                         console.log("resize 저장");
                         console.log(e.target.parentElement);
 
@@ -419,88 +690,432 @@
                         }
 
                         xhr.send(data);
-
-
-
-
+                        */
                     }
+                }
+
+
+            }
+
+            function _removeResizer(target) {
+                target.querySelectorAll('.resizer').forEach(el=>{
+                    el.remove();
+                });
+            }
+        </script>
+
+        <!-- widget 드래그 이동 -->
+        <script>
+            const dragWidgets = document.querySelector('main.content');
+            dragWidgets.querySelectorAll('section.element').forEach(el => {
+                // 드래그 이동 활성화
+                el.setAttribute('draggable',"true");
+            });
+
+            dragWidgets.querySelectorAll('section.element .widget').forEach(el => {
+                // 드래그 이동 활성화
+                el.setAttribute('draggable',"true");
+            });
+
+
+
+            // Pages Drag 이벤트 main 위임
+            let dragStart, startWidget;
+            let dragSelect;
+            let dragPosition; //드래그할 위치 지정
+            let templateWidget;
+
+            function _selectedTemplate(target) {
+                if(target.dataset['type'] == 'section') {
+                    let section = document.createElement('section');
+                    section.classList.add('element');
+                    section.setAttribute('draggable',"true");
+
+                    let inner = document.createElement('section');
+                    inner.classList.add('inner');
+                    section.appendChild(inner);
+
+                    dragSelect = "section";
+
+                    return section;
                 }
             }
 
-            function addResizer(target) {
-                let ne = document.createElement("div");
-                ne.classList.add('resizer');
-                ne.classList.add('ne');
-                target.appendChild(ne);
+            dragWidgets.addEventListener('dragstart', (e) => {
+                console.log("drag start...");
 
-                let nw = document.createElement("div");
-                nw.classList.add('resizer');
-                nw.classList.add('nw');
-                target.appendChild(nw);
+                // 템플릿 선택
+                if(e.target.classList.contains('template')) {
+                    console.log("템플릿 선택");
+                    dragStart = _selectedTemplate(e.target);
+                    console.log(dragStart);
+                    /*
+                    e.target.cloneNode(true);
+                    dragStart.classList.remove('template'); // 템플릿 중복 복사 방지
+                    dragStart.addEventListener('click', widgetResizeClickEvent);
+                    dragSelect = "widget";
+                    templateWidget = dragStart;
+                    */
+                    return;
+                }
 
-                let sw = document.createElement("div");
-                sw.classList.add('resizer');
-                sw.classList.add('sw');
-                target.appendChild(sw);
+                // 요소 검출
+                let target = e.target;
+                while(1) {
+                    if(target.classList.contains('element')
+                        && target.tagName == "SECTION"
+                    ) break;
 
-                let se = document.createElement("div");
-                se.classList.add('resizer');
-                se.classList.add('se');
-                target.appendChild(se);
+                    if(target.classList.contains('element')
+                        && target.tagName == "ARTICLE"
+                    ) break;
 
-                let right = document.createElement("div");
-                right.classList.add('resizer');
-                right.classList.add('right');
-                right.style.top = parseInt(target.offsetHeight/2 - 8) + "px";
-                //console.log(right.style.top)
-                target.appendChild(right);
+                    if(target.tagName == "FORM") return;
+                    if(target.tagName == "MAIN") return;
+                    target = target.parentElement;
+                }
 
-                let bottom = document.createElement("div");
-                bottom.classList.add('resizer');
-                bottom.classList.add('bottom');
-                bottom.style.left = target.offsetWidth/2 - 8 + "px";
+                if(target.tagName == "SECTION") {
+                    dragStart = target;
+                    dragSelect = "section";
+                    console.log("drag start > section");
+                    target.classList.add('dragging');
 
-                target.appendChild(bottom);
-
-                dragResize(target);
-            }
-
-            function removeResizer(target) {
-                //console.log(target);
-                target.querySelectorAll('.resizer').forEach(el=>{
-                    el.remove();
-                    //console.log("resizer 삭제");
-                    //console.log(el);
-                });
-            }
-
-
-        </script>
-
-        <!-- widget Popup 수정 -->
-        <!-- Include stylesheet -->
-        <link href="https://cdn.quilljs.com/1.3.6/quill.snow.css" rel="stylesheet">
-        @livewire('PageContextPopup')
-
-        <!-- Include the Quill library -->
-        <script src="https://cdn.quilljs.com/1.3.6/quill.js"></script>
-
-        <!-- Initialize Quill editor -->
-        <script>
-            /*
-            window.addEventListener('DOMContentLoaded', function(){
-                var quill = new Quill('#editor', {
-                    theme: 'snow'
-                });
+                } else
+                if(target.tagName == 'ARTICLE') {
+                    dragStart = target;
+                    dragSelect = "widget";
+                    console.log("drag start > widget");
+                    target.classList.add('dragging');
+                } else {
+                    e.preventDefault();
+                }
             });
-            */
+
+
+            let dragOver;
+            dragWidgets.addEventListener('dragover', e => {
+                e.preventDefault();
+
+                // 섹션 이동 위치를 지정합니다.
+                if(dragSelect == "section") {
+                    console.log('--section--');
+
+                    // 섹션만 선택
+                    let target = e.target;
+                    while(1) {
+                        if(target.classList.contains('element')
+                        && target.tagName == "SECTION"
+                        ) break;
+
+                        if(target.tagName == "MAIN") return;
+                        target = target.parentElement;
+                    }
+
+                    // 자기 자신은 제외
+                    if(dragStart != target) {
+
+                        if(dragOver && dragOver != target) dragOver.style = "";
+                        dragOver = target;
+
+                        if( e.offsetY > (target.offsetHeight /2 ) ) {
+                            // 중복설정 배제
+                            if(dragPosition != "bottom") {
+                                target.style = "border-bottom: 3px solid #116dff";
+                                dragPosition = "bottom";
+                                return;
+                            }
+                        }
+
+                        if( e.offsetY < (target.offsetHeight /2 ) ) {
+                            // 중복설정 배제
+                            if(dragPosition != "top") {
+                                target.style = "border-top: 3px solid #116dff";
+                                dragPosition = "top";
+                                return;
+                            }
+                        }
+                    }
+
+
+                }
+
+
+                // widget 대상만 선택가능
+                if(dragSelect == "widget") {
+                    console.log('--widget--');
+
+                    // 섹션 선택
+                    let target = e.target;
+                    while(1) {
+                        if(target.classList.contains('element')
+                        && target.tagName == "ARTICLE"
+                        ) break;
+
+                        if(target.tagName == "MAIN") return;
+                        target = target.parentElement;
+                    }
+
+                    if(dragStart != target) {
+
+                        if(dragOver && dragOver != target) dragOver.style = "";
+                        dragOver = target;
+
+                        if( e.offsetX > (target.offsetWidth/2) ) {
+                            if(dragPosition != "right") {
+                                //dragOver = target;
+                                target.style = "border-right: 3px solid #116dff";
+                                dragPosition = "right";
+                                return;
+                            }
+                        }
+
+                        if( e.offsetX < (target.offsetWidth/2) ) {
+                            if(dragPosition != "left") {
+                                //dragOver = target;
+                                target.style = "border-left: 3px solid #116dff";
+                                dragPosition = "left";
+                                return;
+                            }
+                        }
+
+                    }
+                }
+
+
+
+            });
+
+            dragWidgets.addEventListener('dragenter', e => {
+                e.preventDefault();
+            });
+
+            dragWidgets.addEventListener('dragleave', e => {
+                e.preventDefault();
+                //console.log("drag Leave");
+                //console.log(e.target);
+            });
+
+            dragWidgets.addEventListener('drop', (e) => {
+                e.preventDefault();
+                console.log('drop');
+
+                if(dragSelect == "section") {
+                    // 섹션 선택
+                    let target = e.target;
+                    while(1) {
+                        if(target.classList.contains('element')
+                        && target.tagName == "SECTION"
+                        ) break;
+
+                        if(target.tagName == "MAIN") return;
+                        target = target.parentElement;
+                    }
+
+                    let dragTarget = target;
+                    console.log("dragPosition="+dragPosition);
+
+                    // 위치 표시바 삭제
+                    dragTarget.style = "";
+                    //dragTarget.classList.remove('dragging-target');
+
+                    // 다른 섹션 선택
+                    if(dragPosition == "top") {
+                        // 섹션 위로 자리 이동
+                        //targetNext = dragTarget.nextElementSibling;
+                        dragTarget.parentElement.insertBefore(dragStart, dragTarget);
+
+
+                    } else if(dragPosition == "bottom") {
+                        // 섹션 아래 자리로 이동
+                        targetNext = dragTarget.nextElementSibling;
+                        dragTarget.parentElement.insertBefore(dragStart, targetNext);
+                    }
+
+
+                    // 섹션 변경 순서를 저장 pos 정보를 저장
+                    let xhr = new XMLHttpRequest();
+                    xhr.open("POST", "/api/pages/pos");
+                    let data = new FormData();
+                    data.append('_token', token);
+
+                    let i=1;
+                    dragWidgets.querySelectorAll('section.element').forEach(element=>{
+                        element.dataset['pos'] = i;
+                        data.append("pos[" + element.dataset['id'] + "]", i);
+                        i++;
+                    });
+                    //console.log(target.parentElement);
+
+
+                    xhr.onload = function() {
+                        var data = JSON.parse(this.responseText);
+                        console.log(data);
+
+                        // 페이지 갱신
+                        //location.reload();
+
+                        //console.log("테이블 갱신요청");
+                        // 라이브와이어 테이블 갱신
+                        //Livewire.emit('refeshTable');
+                    }
+
+                    xhr.send(data);
+
+                    return;
+                }
+
+
+                // 선택소스가 widget일 경우
+                if(dragSelect == "widget") {
+
+                    // 이동 대상 영역 선택
+                    // 섹션 선택
+                    let target = e.target;
+                    while(1) {
+                        if(target.classList.contains('element')
+                        && target.tagName == "SECTION"
+                        ) break;
+
+                        if(target.classList.contains('element')
+                        && target.tagName == "ARTICLE"
+                        ) break;
+
+                        if(target.tagName == "MAIN") return;
+                        target = target.parentElement;
+                    }
+
+                    let dragTarget = target;
+                    console.log("dragPosition="+dragPosition);
+                    console.log(target);
+
+                    dragTarget.style = "";
+
+                    // 대상 타켓이 section인 경우
+                    if(dragTarget.tagName == "SECTION") {
+                        console.log("widget to section");
+                        dragStart.setAttribute('data-ref', dragTarget.dataset['id']);
+                        dragStart.setAttribute('data-level', parseInt(dragTarget.dataset['level']) + 1 );
+
+                        dragTarget.querySelector('.inner').appendChild(dragStart);
+
+                    } else
+                    // 위젯을 이동합니다.
+                    if(dragTarget.classList.contains('widget')) {
+                        dragStart.setAttribute('data-ref', target.parentElement.parentElement.dataset['id']);
+                        dragStart.setAttribute('data-level', parseInt(target.parentElement.parentElement.dataset['level']) + 1 );
+                        //console.log("id=" + target.parentElement.parentElement.dataset['id']);
+
+
+                        if(dragPosition == "right") {
+                            dragStart.dataset['pos'] = parseInt(target.parentElement.parentElement.dataset['pos']) + 1 ;
+                            let next = target.nextElementSibling;
+                            if(next) {
+                                console.log("widget 뒤에 추가");
+                                target.parentElement.insertBefore(dragStart, next);
+                            } else {
+                                console.log("다음요소 없음. 마지막 추가");
+                                target.parentElement.appendChild(dragStart);
+                            }
+
+                        } else if(dragPosition == "left") {
+                            dragStart.dataset['pos'] = parseInt(target.parentElement.parentElement.dataset['pos']) - 1 ;
+
+                            console.log("widget 앞에 추가");
+                            target.parentElement.insertBefore(dragStart, target);
+                            //
+
+                        } else {
+                            // 위지 지정값 없음.
+                            // 비어있는 섹션에 이동시...
+                            console.log("위젯을 섹션 처음에 추가");
+                            target.parentElement.insertBefore(dragStart, target.parentElement.firstChild);
+                        }
+                    }
+
+
+                    // 계층이동
+                    // 섹션 변경 순서를 저장 pos 정보를 저장
+                    let xhr = new XMLHttpRequest();
+                    xhr.open("POST", "/api/pages/move");
+                    let data = new FormData();
+                    data.append('_token', token);
+
+                    if(templateWidget) {
+                        templateWidget = null; //초기화
+                        data.append("id", 0); // 새로입력
+                        data.append("type", dragStart.dataset['type']);
+                    } else {
+                        data.append("id", dragStart.dataset['id']);
+                    }
+
+                    data.append("ref", dragStart.dataset['ref']);
+                    data.append("level", dragStart.dataset['level']);
+                    data.append("pos", dragStart.dataset['pos']);
+                    data.append('_uri', location.href);
+
+
+
+
+                    xhr.onload = function() {
+                        var data = JSON.parse(this.responseText);
+                        console.log(data);
+
+                        // 페이지 갱신
+                        //location.reload();
+
+                        //console.log("테이블 갱신요청");
+                        // 라이브와이어 테이블 갱신
+                        //Livewire.emit('refeshTable');
+                    }
+
+                    xhr.send(data);
+
+
+
+                    return;
+                }
+
+
+                //console.log(dragTarget);
+                //dragTarget.classList.remove('target');
+
+
+
+            });
+
+
+            dragWidgets.addEventListener('dragend', (e) => {
+                e.preventDefault();
+                console.log('dragend');
+                if(dragOver) dragOver.style = "";
+                //console.log(e.target);
+
+                let target = e.target;
+                target.classList.remove('dragging');
+
+                /*
+                target = e.target;
+                while(!target.classList.contains('element')) {
+                    if(target.tagName == "FORM") return;
+                    target = target.parentElement;
+                }
+                target.classList.remove("target");
+                */
+
+                //초기화
+                dragStart = null;
+                startWidget = null;
+                dragPosition = null;
+                dragSelect = null;
+            });
+
+
+
         </script>
-
-
-
-
 
         <!-- context Menu -->
+        @livewire('PageContextPopup')
         @push("scripts")
         <script>
             // 섹션, 위젯 설정 contextMenu
@@ -675,384 +1290,6 @@
         </script>
         @endpush
 
-
-        <!-- widget 드래그 이동 -->
-        <script>
-            dragWidgets.querySelectorAll('section.element').forEach(el => {
-                el.setAttribute('draggable',"true");
-            });
-
-            dragWidgets.querySelectorAll('section.element .widget').forEach(el => {
-                el.setAttribute('draggable',"true");
-            });
-
-            // Pages Drag 이벤트 main 위임
-            //const pageEvent = dragWidgets;
-            let dragStart, startWidget;
-            let dragSelect;
-            let dragPosition; //드래그할 위치 지정
-            let templateWidget;
-            dragWidgets.addEventListener('dragstart', (e) => {
-                console.log("drag start...");
-                //console.log(e.target);
-                if(e.target.classList.contains('template')) {
-                    console.log("템플릿 선택");
-                    dragStart = e.target.cloneNode(true);
-                    dragStart.classList.remove('template'); // 템플릿 중복 복사 방지
-                    dragStart.addEventListener('click', widgetResizeClickEvent);
-                    dragSelect = "widget";
-                    templateWidget = dragStart;
-                    return;
-                }
-
-
-                let target = e.target;
-                while(1) {
-                    if(target.classList.contains('element')
-                        && target.tagName == "SECTION"
-                    ) break;
-
-                    if(target.classList.contains('element')
-                        && target.tagName == "ARTICLE"
-                    ) break;
-
-                    //if(target.classList.contains('element')) break;
-                    //if(target.classList.contains('widget')) break;
-                    if(target.tagName == "FORM") return;
-                    if(target.tagName == "MAIN") return;
-                    target = target.parentElement;
-                }
-
-                if(target.tagName == "SECTION") {
-                    dragStart = target;
-                    dragSelect = "section";
-                    //console.log(dragSelect);
-                    console.log("drag start > section");
-
-                    target.classList.add('dragging');
-
-                } else
-                if(target.tagName == 'ARTICLE') {
-                    dragStart = target;
-                    dragSelect = "widget";
-                    //console.log(dragSelect);
-                    console.log("drag start > widget");
-
-                    target.classList.add('dragging');
-
-                } else {
-                    e.preventDefault();
-                }
-            });
-
-            let dragOver;
-            dragWidgets.addEventListener('dragover', e => {
-                e.preventDefault();
-
-                // 섹션 이동 위치를 지정합니다.
-                if(dragSelect == "section") {
-                    console.log('--section--');
-
-                    // 섹션만 선택
-                    let target = e.target;
-                    while(1) {
-                        if(target.classList.contains('element')
-                        && target.tagName == "SECTION"
-                        ) break;
-
-                        if(target.tagName == "MAIN") return;
-                        target = target.parentElement;
-                    }
-
-                    // 자기 자신은 제외
-                    if(dragStart != target) {
-
-                        if(dragOver && dragOver != target) dragOver.style = "";
-                        dragOver = target;
-
-                        if( e.offsetY > (target.offsetHeight /2 ) ) {
-                            // 중복설정 배제
-                            if(dragPosition != "bottom") {
-                                target.style = "border-bottom: 3px solid #116dff";
-                                dragPosition = "bottom";
-                                return;
-                            }
-                        }
-
-                        if( e.offsetY < (target.offsetHeight /2 ) ) {
-                            // 중복설정 배제
-                            if(dragPosition != "top") {
-                                target.style = "border-top: 3px solid #116dff";
-                                dragPosition = "top";
-                                return;
-                            }
-                        }
-                    }
-
-
-                }
-
-
-                // widget 대상만 선택가능
-                if(dragSelect == "widget") {
-                    console.log('--widget--');
-
-                    // 섹션 선택
-                    let target = e.target;
-                    while(1) {
-                        if(target.classList.contains('element')
-                        && target.tagName == "ARTICLE"
-                        ) break;
-
-                        if(target.tagName == "MAIN") return;
-                        target = target.parentElement;
-                    }
-
-                    if(dragStart != target) {
-
-                        if(dragOver && dragOver != target) dragOver.style = "";
-                        dragOver = target;
-
-                        if( e.offsetX > (target.offsetWidth/2) ) {
-                            if(dragPosition != "right") {
-                                //dragOver = target;
-                                target.style = "border-right: 3px solid #116dff";
-                                dragPosition = "right";
-                                return;
-                            }
-                        }
-
-                        if( e.offsetX < (target.offsetWidth/2) ) {
-                            if(dragPosition != "left") {
-                                //dragOver = target;
-                                target.style = "border-left: 3px solid #116dff";
-                                dragPosition = "left";
-                                return;
-                            }
-                        }
-
-                    }
-                }
-
-
-
-            });
-
-            dragWidgets.addEventListener('dragenter', e => {
-                e.preventDefault();
-            });
-
-            dragWidgets.addEventListener('dragleave', e => {
-                e.preventDefault();
-                console.log("drag Leave");
-                console.log(e.target);
-
-
-            });
-
-            dragWidgets.addEventListener('drop', (e) => {
-                e.preventDefault();
-                console.log('drop');
-
-                if(dragSelect == "section") {
-                    // 섹션 선택
-                    let target = e.target;
-                    while(1) {
-                        if(target.classList.contains('element')
-                        && target.tagName == "SECTION"
-                        ) break;
-
-                        if(target.tagName == "MAIN") return;
-                        target = target.parentElement;
-                    }
-
-                    let dragTarget = target;
-                    console.log("dragPosition="+dragPosition);
-
-                    // 위치 표시바 삭제
-                    dragTarget.style = "";
-                    //dragTarget.classList.remove('dragging-target');
-
-                    // 다른 섹션 선택
-                    if(dragPosition == "top") {
-                        // 섹션 위로 자리 이동
-                        //targetNext = dragTarget.nextElementSibling;
-                        dragTarget.parentElement.insertBefore(dragStart, dragTarget);
-
-
-                    } else if(dragPosition == "bottom") {
-                        // 섹션 아래 자리로 이동
-                        targetNext = dragTarget.nextElementSibling;
-                        dragTarget.parentElement.insertBefore(dragStart, targetNext);
-                    }
-
-
-                    // 섹션 변경 순서를 저장 pos 정보를 저장
-                    let xhr = new XMLHttpRequest();
-                    xhr.open("POST", "/api/pages/pos");
-                    let data = new FormData();
-                    data.append('_token', token);
-
-                    let i=1;
-                    dragWidgets.querySelectorAll('section.element').forEach(element=>{
-                        element.dataset['pos'] = i;
-                        data.append("pos[" + element.dataset['id'] + "]", i);
-                        i++;
-                    });
-                    //console.log(target.parentElement);
-
-
-                    xhr.onload = function() {
-                        var data = JSON.parse(this.responseText);
-                        console.log(data);
-
-                        // 페이지 갱신
-                        //location.reload();
-
-                        //console.log("테이블 갱신요청");
-                        // 라이브와이어 테이블 갱신
-                        //Livewire.emit('refeshTable');
-                    }
-
-                    xhr.send(data);
-
-                    return;
-                }
-
-
-                // 선택소스가 widget일 경우
-                if(dragSelect == "widget") {
-
-                    // 섹션 선택
-                    let target = e.target;
-                    while(1) {
-                        if(target.classList.contains('element')
-                        && target.tagName == "SECTION"
-                        ) break;
-
-                        if(target.classList.contains('element')
-                        && target.tagName == "ARTICLE"
-                        ) break;
-
-                        if(target.tagName == "MAIN") return;
-                        target = target.parentElement;
-                    }
-
-                    let dragTarget = target;
-                    console.log("dragPosition="+dragPosition);
-                    //console.log(target);
-
-
-                    dragTarget.style = "";
-
-                    // 대상 타켓이 section인 경우
-                    if(dragTarget.tagName == "SECTION") {
-                        console.log("widget to section");
-                        dragStart.setAttribute('data-ref', dragTarget.dataset['id']);
-                        dragStart.setAttribute('data-level', parseInt(dragTarget.dataset['level']) + 1 );
-
-                        dragTarget.querySelector('.inner').appendChild(dragStart);
-
-                    } else
-                    if(dragTarget.classList.contains('widget')) {
-                        dragStart.setAttribute('data-ref', target.parentElement.parentElement.dataset['id']);
-                        dragStart.setAttribute('data-level', parseInt(target.parentElement.parentElement.dataset['level']) + 1 );
-                        console.log("id=" + target.parentElement.parentElement.dataset['id']);
-
-
-                        if(dragPosition == "right") {
-                            dragStart.dataset['pos'] = parseInt(target.parentElement.parentElement.dataset['pos']) + 1 ;
-
-                            target.parentElement.appendChild(dragStart);
-                            console.log("widget 뒤에 추가");
-                        } else if(dragPosition == "left") {
-                            dragStart.dataset['pos'] = parseInt(target.parentElement.parentElement.dataset['pos']) - 1 ;
-
-                            target.parentElement.insertBefore(dragStart, target.parentElement.firstChild);
-                            console.log("widget 앞에 추가");
-
-                        }
-                    }
-
-
-                    // 계층이동
-                    // 섹션 변경 순서를 저장 pos 정보를 저장
-                    let xhr = new XMLHttpRequest();
-                    xhr.open("POST", "/api/pages/move");
-                    let data = new FormData();
-                    data.append('_token', token);
-
-                    if(templateWidget) {
-                        templateWidget = null; //초기화
-                        data.append("id", 0); // 새로입력
-                        data.append("type", dragStart.dataset['type']);
-                    } else {
-                        data.append("id", dragStart.dataset['id']);
-                    }
-
-                    data.append("ref", dragStart.dataset['ref']);
-                    data.append("level", dragStart.dataset['level']);
-                    data.append("pos", dragStart.dataset['pos']);
-                    data.append('_uri', location.href);
-
-
-
-
-                    xhr.onload = function() {
-                        var data = JSON.parse(this.responseText);
-                        console.log(data);
-
-                        // 페이지 갱신
-                        //location.reload();
-
-                        //console.log("테이블 갱신요청");
-                        // 라이브와이어 테이블 갱신
-                        //Livewire.emit('refeshTable');
-                    }
-
-                    xhr.send(data);
-
-
-
-                    return;
-                }
-
-
-                //console.log(dragTarget);
-                //dragTarget.classList.remove('target');
-
-
-
-            });
-
-
-            dragWidgets.addEventListener('dragend', (e) => {
-                e.preventDefault();
-                console.log('dragend');
-                if(dragOver) dragOver.style = "";
-                //console.log(e.target);
-
-                let target = e.target;
-                target.classList.remove('dragging');
-
-                /*
-                target = e.target;
-                while(!target.classList.contains('element')) {
-                    if(target.tagName == "FORM") return;
-                    target = target.parentElement;
-                }
-                target.classList.remove("target");
-                */
-
-                //초기화
-                dragStart = null;
-                startWidget = null;
-                dragPosition = null;
-                dragSelect = null;
-            })
-
-        </script>
-
         {{-- dropzone --}}
         <div>
             @push('css')
@@ -1215,206 +1452,85 @@
             </script>
         </div>
 
-
         {{-- Admin Rule Setting --}}
         @include('jinypage::setMarkRule')
 
+        <!-- 템플릿 -->
+        <style>
+            .template {
+                width:80px; height: 80px;
+                background-color: white;
+                text-align: center;
 
+                display: flex;
+                align-items: center;
+            }
+            .template svg {
+                display: inline-block;
+            }
+            .template div.name {
+                display: block;
+            }
+        </style>
 
-        <div >
-            <article class="widget element template" data-type="html" draggable="true">
-                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-body-text" viewBox="0 0 16 16">
+        <div class="flex flex-row">
+            <div class="template" data-type="section" draggable="true">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" class="bi bi-layout-three-columns" viewBox="0 0 16 16">
+                    <path d="M0 1.5A1.5 1.5 0 0 1 1.5 0h13A1.5 1.5 0 0 1 16 1.5v13a1.5 1.5 0 0 1-1.5 1.5h-13A1.5 1.5 0 0 1 0 14.5v-13zM1.5 1a.5.5 0 0 0-.5.5v13a.5.5 0 0 0 .5.5H5V1H1.5zM10 15V1H6v14h4zm1 0h3.5a.5.5 0 0 0 .5-.5v-13a.5.5 0 0 0-.5-.5H11v14z"/>
+                </svg>
+                <div class="name">
+                    Section
+                </div>
+            </div>
+
+            <div class="template">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" class="bi bi-body-text" viewBox="0 0 16 16">
                     <path fill-rule="evenodd" d="M0 .5A.5.5 0 0 1 .5 0h4a.5.5 0 0 1 0 1h-4A.5.5 0 0 1 0 .5Zm0 2A.5.5 0 0 1 .5 2h7a.5.5 0 0 1 0 1h-7a.5.5 0 0 1-.5-.5Zm9 0a.5.5 0 0 1 .5-.5h5a.5.5 0 0 1 0 1h-5a.5.5 0 0 1-.5-.5Zm-9 2A.5.5 0 0 1 .5 4h3a.5.5 0 0 1 0 1h-3a.5.5 0 0 1-.5-.5Zm5 0a.5.5 0 0 1 .5-.5h5a.5.5 0 0 1 0 1h-5a.5.5 0 0 1-.5-.5Zm7 0a.5.5 0 0 1 .5-.5h3a.5.5 0 0 1 0 1h-3a.5.5 0 0 1-.5-.5Zm-12 2A.5.5 0 0 1 .5 6h6a.5.5 0 0 1 0 1h-6a.5.5 0 0 1-.5-.5Zm8 0a.5.5 0 0 1 .5-.5h5a.5.5 0 0 1 0 1h-5a.5.5 0 0 1-.5-.5Zm-8 2A.5.5 0 0 1 .5 8h5a.5.5 0 0 1 0 1h-5a.5.5 0 0 1-.5-.5Zm7 0a.5.5 0 0 1 .5-.5h7a.5.5 0 0 1 0 1h-7a.5.5 0 0 1-.5-.5Zm-7 2a.5.5 0 0 1 .5-.5h8a.5.5 0 0 1 0 1h-8a.5.5 0 0 1-.5-.5Zm0 2a.5.5 0 0 1 .5-.5h4a.5.5 0 0 1 0 1h-4a.5.5 0 0 1-.5-.5Zm0 2a.5.5 0 0 1 .5-.5h2a.5.5 0 0 1 0 1h-2a.5.5 0 0 1-.5-.5Z"/>
                 </svg>
+                <div class="name">
+                    Html
+                </div>
+            </div>
 
-                Html
-            </article>
+            <div class="template" data-type="html" draggable="true">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" class="bi bi-body-text" viewBox="0 0 16 16">
+                    <path fill-rule="evenodd" d="M0 .5A.5.5 0 0 1 .5 0h4a.5.5 0 0 1 0 1h-4A.5.5 0 0 1 0 .5Zm0 2A.5.5 0 0 1 .5 2h7a.5.5 0 0 1 0 1h-7a.5.5 0 0 1-.5-.5Zm9 0a.5.5 0 0 1 .5-.5h5a.5.5 0 0 1 0 1h-5a.5.5 0 0 1-.5-.5Zm-9 2A.5.5 0 0 1 .5 4h3a.5.5 0 0 1 0 1h-3a.5.5 0 0 1-.5-.5Zm5 0a.5.5 0 0 1 .5-.5h5a.5.5 0 0 1 0 1h-5a.5.5 0 0 1-.5-.5Zm7 0a.5.5 0 0 1 .5-.5h3a.5.5 0 0 1 0 1h-3a.5.5 0 0 1-.5-.5Zm-12 2A.5.5 0 0 1 .5 6h6a.5.5 0 0 1 0 1h-6a.5.5 0 0 1-.5-.5Zm8 0a.5.5 0 0 1 .5-.5h5a.5.5 0 0 1 0 1h-5a.5.5 0 0 1-.5-.5Zm-8 2A.5.5 0 0 1 .5 8h5a.5.5 0 0 1 0 1h-5a.5.5 0 0 1-.5-.5Zm7 0a.5.5 0 0 1 .5-.5h7a.5.5 0 0 1 0 1h-7a.5.5 0 0 1-.5-.5Zm-7 2a.5.5 0 0 1 .5-.5h8a.5.5 0 0 1 0 1h-8a.5.5 0 0 1-.5-.5Zm0 2a.5.5 0 0 1 .5-.5h4a.5.5 0 0 1 0 1h-4a.5.5 0 0 1-.5-.5Zm0 2a.5.5 0 0 1 .5-.5h2a.5.5 0 0 1 0 1h-2a.5.5 0 0 1-.5-.5Z"/>
+                </svg>
+                <div class="name">
+                    Html
+                </div>
+            </div>
 
-            <article class="widget element template" data-type="markdown" draggable="true">
-                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-hash" viewBox="0 0 16 16">
+            <div class="template" data-type="markdown" draggable="true">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" class="bi bi-hash" viewBox="0 0 16 16">
                     <path d="M8.39 12.648a1.32 1.32 0 0 0-.015.18c0 .305.21.508.5.508.266 0 .492-.172.555-.477l.554-2.703h1.204c.421 0 .617-.234.617-.547 0-.312-.188-.53-.617-.53h-.985l.516-2.524h1.265c.43 0 .618-.227.618-.547 0-.313-.188-.524-.618-.524h-1.046l.476-2.304a1.06 1.06 0 0 0 .016-.164.51.51 0 0 0-.516-.516.54.54 0 0 0-.539.43l-.523 2.554H7.617l.477-2.304c.008-.04.015-.118.015-.164a.512.512 0 0 0-.523-.516.539.539 0 0 0-.531.43L6.53 5.484H5.414c-.43 0-.617.22-.617.532 0 .312.187.539.617.539h.906l-.515 2.523H4.609c-.421 0-.609.219-.609.531 0 .313.188.547.61.547h.976l-.516 2.492c-.008.04-.015.125-.015.18 0 .305.21.508.5.508.265 0 .492-.172.554-.477l.555-2.703h2.242l-.515 2.492zm-1-6.109h2.266l-.515 2.563H6.859l.532-2.563z"/>
                 </svg>
-                Markdown
-            </article>
+                <div class="name">
+                    Markdown
+                </div>
+            </div>
 
-            <article class="widget element template" data-type="image" draggable="true">
-                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-card-image" viewBox="0 0 16 16">
+            <div class="template" data-type="image" draggable="true">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" class="bi bi-card-image" viewBox="0 0 16 16">
                     <path d="M6.002 5.5a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 3 0z"/>
                     <path d="M1.5 2A1.5 1.5 0 0 0 0 3.5v9A1.5 1.5 0 0 0 1.5 14h13a1.5 1.5 0 0 0 1.5-1.5v-9A1.5 1.5 0 0 0 14.5 2h-13zm13 1a.5.5 0 0 1 .5.5v6l-3.775-1.947a.5.5 0 0 0-.577.093l-3.71 3.71-2.66-1.772a.5.5 0 0 0-.63.062L1.002 12v.54A.505.505 0 0 1 1 12.5v-9a.5.5 0 0 1 .5-.5h13z"/>
                 </svg>
-                Image
-            </article>
+                <div class="name">
+                    Image
+                </div>
+            </div>
 
-            <article class="widget element template" data-type="blade" draggable="true">
-                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-code-slash" viewBox="0 0 16 16">
+            <div class="template" data-type="balde" draggable="true">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" class="bi bi-code-slash" viewBox="0 0 16 16">
                     <path d="M10.478 1.647a.5.5 0 1 0-.956-.294l-4 13a.5.5 0 0 0 .956.294l4-13zM4.854 4.146a.5.5 0 0 1 0 .708L1.707 8l3.147 3.146a.5.5 0 0 1-.708.708l-3.5-3.5a.5.5 0 0 1 0-.708l3.5-3.5a.5.5 0 0 1 .708 0zm6.292 0a.5.5 0 0 0 0 .708L14.293 8l-3.147 3.146a.5.5 0 0 0 .708.708l3.5-3.5a.5.5 0 0 0 0-.708l-3.5-3.5a.5.5 0 0 0-.708 0z"/>
                 </svg>
-                Blade
-            </article>
-
-            <article class="widget element template" data-type="video" draggable="true">
-                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-caret-right" viewBox="0 0 16 16">
-                    <path d="M6 12.796V3.204L11.481 8 6 12.796zm.659.753 5.48-4.796a1 1 0 0 0 0-1.506L6.66 2.451C6.011 1.885 5 2.345 5 3.204v9.592a1 1 0 0 0 1.659.753z"/>
-                </svg>
-                Video
-            </article>
-
-            <article class="widget element template" data-type="calender" draggable="true">
-                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-calendar3" viewBox="0 0 16 16">
-                    <path d="M14 0H2a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V2a2 2 0 0 0-2-2zM1 3.857C1 3.384 1.448 3 2 3h12c.552 0 1 .384 1 .857v10.286c0 .473-.448.857-1 .857H2c-.552 0-1-.384-1-.857V3.857z"/>
-                    <path d="M6.5 7a1 1 0 1 0 0-2 1 1 0 0 0 0 2zm3 0a1 1 0 1 0 0-2 1 1 0 0 0 0 2zm3 0a1 1 0 1 0 0-2 1 1 0 0 0 0 2zm-9 3a1 1 0 1 0 0-2 1 1 0 0 0 0 2zm3 0a1 1 0 1 0 0-2 1 1 0 0 0 0 2zm3 0a1 1 0 1 0 0-2 1 1 0 0 0 0 2zm3 0a1 1 0 1 0 0-2 1 1 0 0 0 0 2zm-9 3a1 1 0 1 0 0-2 1 1 0 0 0 0 2zm3 0a1 1 0 1 0 0-2 1 1 0 0 0 0 2zm3 0a1 1 0 1 0 0-2 1 1 0 0 0 0 2z"/>
-                </svg>
-                Calender
-            </article>
-
-            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-bounding-box-circles" viewBox="0 0 16 16">
-                <path d="M2 1a1 1 0 1 0 0 2 1 1 0 0 0 0-2zM0 2a2 2 0 0 1 3.937-.5h8.126A2 2 0 1 1 14.5 3.937v8.126a2 2 0 1 1-2.437 2.437H3.937A2 2 0 1 1 1.5 12.063V3.937A2 2 0 0 1 0 2zm2.5 1.937v8.126c.703.18 1.256.734 1.437 1.437h8.126a2.004 2.004 0 0 1 1.437-1.437V3.937A2.004 2.004 0 0 1 12.063 2.5H3.937A2.004 2.004 0 0 1 2.5 3.937zM14 1a1 1 0 1 0 0 2 1 1 0 0 0 0-2zM2 13a1 1 0 1 0 0 2 1 1 0 0 0 0-2zm12 0a1 1 0 1 0 0 2 1 1 0 0 0 0-2z"/>
-            </svg>
-
-
-            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-chevron-bar-left" viewBox="0 0 16 16">
-                <path fill-rule="evenodd" d="M11.854 3.646a.5.5 0 0 1 0 .708L8.207 8l3.647 3.646a.5.5 0 0 1-.708.708l-4-4a.5.5 0 0 1 0-.708l4-4a.5.5 0 0 1 .708 0zM4.5 1a.5.5 0 0 0-.5.5v13a.5.5 0 0 0 1 0v-13a.5.5 0 0 0-.5-.5z"/>
-              </svg>
-
-              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-chevron-bar-right" viewBox="0 0 16 16">
-                <path fill-rule="evenodd" d="M4.146 3.646a.5.5 0 0 0 0 .708L7.793 8l-3.647 3.646a.5.5 0 0 0 .708.708l4-4a.5.5 0 0 0 0-.708l-4-4a.5.5 0 0 0-.708 0zM11.5 1a.5.5 0 0 1 .5.5v13a.5.5 0 0 1-1 0v-13a.5.5 0 0 1 .5-.5z"/>
-              </svg>
-
-              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-chevron-bar-down" viewBox="0 0 16 16">
-                <path fill-rule="evenodd" d="M3.646 4.146a.5.5 0 0 1 .708 0L8 7.793l3.646-3.647a.5.5 0 0 1 .708.708l-4 4a.5.5 0 0 1-.708 0l-4-4a.5.5 0 0 1 0-.708zM1 11.5a.5.5 0 0 1 .5-.5h13a.5.5 0 0 1 0 1h-13a.5.5 0 0 1-.5-.5z"/>
-              </svg>
-
-              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-chevron-bar-up" viewBox="0 0 16 16">
-                <path fill-rule="evenodd" d="M3.646 11.854a.5.5 0 0 0 .708 0L8 8.207l3.646 3.647a.5.5 0 0 0 .708-.708l-4-4a.5.5 0 0 0-.708 0l-4 4a.5.5 0 0 0 0 .708zM2.4 5.2c0 .22.18.4.4.4h10.4a.4.4 0 0 0 0-.8H2.8a.4.4 0 0 0-.4.4z"/>
-              </svg>
-
-              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-columns-gap" viewBox="0 0 16 16">
-                <path d="M6 1v3H1V1h5zM1 0a1 1 0 0 0-1 1v3a1 1 0 0 0 1 1h5a1 1 0 0 0 1-1V1a1 1 0 0 0-1-1H1zm14 12v3h-5v-3h5zm-5-1a1 1 0 0 0-1 1v3a1 1 0 0 0 1 1h5a1 1 0 0 0 1-1v-3a1 1 0 0 0-1-1h-5zM6 8v7H1V8h5zM1 7a1 1 0 0 0-1 1v7a1 1 0 0 0 1 1h5a1 1 0 0 0 1-1V8a1 1 0 0 0-1-1H1zm14-6v7h-5V1h5zm-5-1a1 1 0 0 0-1 1v7a1 1 0 0 0 1 1h5a1 1 0 0 0 1-1V1a1 1 0 0 0-1-1h-5z"/>
-              </svg>
-
-              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-columns-gap" viewBox="0 0 16 16">
-                <path d="M6 1v3H1V1h5zM1 0a1 1 0 0 0-1 1v3a1 1 0 0 0 1 1h5a1 1 0 0 0 1-1V1a1 1 0 0 0-1-1H1zm14 12v3h-5v-3h5zm-5-1a1 1 0 0 0-1 1v3a1 1 0 0 0 1 1h5a1 1 0 0 0 1-1v-3a1 1 0 0 0-1-1h-5zM6 8v7H1V8h5zM1 7a1 1 0 0 0-1 1v7a1 1 0 0 0 1 1h5a1 1 0 0 0 1-1V8a1 1 0 0 0-1-1H1zm14-6v7h-5V1h5zm-5-1a1 1 0 0 0-1 1v7a1 1 0 0 0 1 1h5a1 1 0 0 0 1-1V1a1 1 0 0 0-1-1h-5z"/>
-              </svg>
-
-              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-graph-up-arrow" viewBox="0 0 16 16">
-                <path fill-rule="evenodd" d="M0 0h1v15h15v1H0V0Zm10 3.5a.5.5 0 0 1 .5-.5h4a.5.5 0 0 1 .5.5v4a.5.5 0 0 1-1 0V4.9l-3.613 4.417a.5.5 0 0 1-.74.037L7.06 6.767l-3.656 5.027a.5.5 0 0 1-.808-.588l4-5.5a.5.5 0 0 1 .758-.06l2.609 2.61L13.445 4H10.5a.5.5 0 0 1-.5-.5Z"/>
-              </svg>
-
-              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-grid-3x3" viewBox="0 0 16 16">
-                <path d="M0 1.5A1.5 1.5 0 0 1 1.5 0h13A1.5 1.5 0 0 1 16 1.5v13a1.5 1.5 0 0 1-1.5 1.5h-13A1.5 1.5 0 0 1 0 14.5v-13zM1.5 1a.5.5 0 0 0-.5.5V5h4V1H1.5zM5 6H1v4h4V6zm1 4h4V6H6v4zm-1 1H1v3.5a.5.5 0 0 0 .5.5H5v-4zm1 0v4h4v-4H6zm5 0v4h3.5a.5.5 0 0 0 .5-.5V11h-4zm0-1h4V6h-4v4zm0-5h4V1.5a.5.5 0 0 0-.5-.5H11v4zm-1 0V1H6v4h4z"/>
-              </svg>
-
-              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-input-cursor" viewBox="0 0 16 16">
-                <path d="M10 5h4a1 1 0 0 1 1 1v4a1 1 0 0 1-1 1h-4v1h4a2 2 0 0 0 2-2V6a2 2 0 0 0-2-2h-4v1zM6 5V4H2a2 2 0 0 0-2 2v4a2 2 0 0 0 2 2h4v-1H2a1 1 0 0 1-1-1V6a1 1 0 0 1 1-1h4z"/>
-                <path fill-rule="evenodd" d="M8 1a.5.5 0 0 1 .5.5v13a.5.5 0 0 1-1 0v-13A.5.5 0 0 1 8 1z"/>
-              </svg>
-
-              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-key" viewBox="0 0 16 16">
-                <path d="M0 8a4 4 0 0 1 7.465-2H14a.5.5 0 0 1 .354.146l1.5 1.5a.5.5 0 0 1 0 .708l-1.5 1.5a.5.5 0 0 1-.708 0L13 9.207l-.646.647a.5.5 0 0 1-.708 0L11 9.207l-.646.647a.5.5 0 0 1-.708 0L9 9.207l-.646.647A.5.5 0 0 1 8 10h-.535A4 4 0 0 1 0 8zm4-3a3 3 0 1 0 2.712 4.285A.5.5 0 0 1 7.163 9h.63l.853-.854a.5.5 0 0 1 .708 0l.646.647.646-.647a.5.5 0 0 1 .708 0l.646.647.646-.647a.5.5 0 0 1 .708 0l.646.647.793-.793-1-1h-6.63a.5.5 0 0 1-.451-.285A3 3 0 0 0 4 5z"/>
-                <path d="M4 8a1 1 0 1 1-2 0 1 1 0 0 1 2 0z"/>
-              </svg>
+                <div class="name">
+                    Balde
+                </div>
+            </div>
 
         </div>
-        <script>
-            /*
-            let templates = document.querySelectorAll(".article.template");
-            templates.forEach(el=>{
 
-                el.addEventListener('dragstart', function(e){
-                    console.log(e.target);
-                });
-                el.addEventListener('dragenter', function(e){
-
-                });
-                el.addEventListener('dragover', function(e){
-                    e.preventDefault();
-                });
-                el.addEventListener('dragleave', function(e){
-
-                });
-                el.addEventListener('drop', function(e){
-                    e.preventDefault();
-                });
-                el.addEventListener('dragend', function(e){
-
-                });
-            });
-            */
-        </script>
-
-        <!-- 사이드 패널 -->
-        <script>
-            /*
-            let offSideRight = document.createElement('div');
-            offSideRight.classList.add('off-side-right');
-            offSideRight.style.width = "300px";
-
-            document.querySelector('.wrapper').appendChild( offSideRight );
-            */
-
-
-            function ajaxGet(url, callback) {
-                // ajax 데이터 호출
-                fetch(url, {
-                    method: 'get'
-                })
-                .then(response => {
-                    return response.text();
-                })
-                .then(data => {
-                    callback(data);
-                });
-            }
-
-            function ajaxSubmit(form, callback) {
-                form.addEventListener('submit', function(e){
-                    e.preventDefault();
-                    console.log('ajax submit');
-
-                    let url = form.action;
-                    console.log("url=" + url);
-
-                    let formData = new FormData(form);
-                    let searchParams = new URLSearchParams();
-                    for(let pair of formData) {
-                        searchParams.append(pair[0], pair[1]);
-                        console.log("key=" + pair[0] + " , value=" + pair[1]);
-                    }
-
-                    fetch(url, {
-                        method:'post',
-                        body: searchParams
-                    }).then(function(response){
-                        return response.json();
-
-                    }).then(function(json){
-                        callback(json);
-                        //console.log(json);
-                        //Livewire.emit('refeshTable'); // 라이브와이어 테이블 갱신
-                        //modals.pop().remove(); //모달 제거
-
-                    }).catch(function(error){
-                        //console.log(error);
-                    });
-                });
-            }
-
-
-            /*
-            let url = "/api/pages/pannel/section";
-            ajaxGet(url, function(data){
-                offSideRight.innerHTML = data;
-                let form = offSideRight.querySelector('form');
-
-                ajaxSubmit(form, function(json){
-                    console.log(json);
-                });
-            });
-            */
-
-
-
-        </script>
 
     </x-theme-layout>
 </x-theme>
