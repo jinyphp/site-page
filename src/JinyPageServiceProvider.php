@@ -16,6 +16,8 @@ class JinyPageServiceProvider extends ServiceProvider
     {
         // 모듈: 라우트 설정
         $this->loadRoutesFrom(__DIR__.'/../routes/web.php');
+        $this->loadRoutesFrom(__DIR__.'/../routes/404.php');
+
         $this->loadViewsFrom(__DIR__.'/../resources/views', $this->package);
 
         // 데이터베이스

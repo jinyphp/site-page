@@ -7,6 +7,7 @@
     <title>Document</title>
 </head>
 <body>
-    page 404
+    <h1>page 404</h1>
+
 </body>
 </html>
