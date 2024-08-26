@@ -1,6 +1,5 @@
 <?php
-
-namespace Jiny\Pages\Http\Controllers;
+namespace Jiny\Site\Page\Http\Controllers;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -27,7 +26,7 @@ class HtmlView extends Controller
         if (isset($this->actions['view_layout'])) {
             $mainView = $this->actions['view_layout'];
         } else {
-            $mainView = "jinypage::html";
+            $mainView = "jiny-site-page::html";
         }
 
         // 사이트 테마 지정
@@ -41,9 +40,9 @@ class HtmlView extends Controller
 
         } else {
             // 권한없음
-            //$this->actions['view_content'] = "jinypage::error.permit";
+            //$this->actions['view_content'] = "jiny-site-page::error.permit";
             //$slot = "";
-            $slot = view("jinypage::error.permit");
+            $slot = view("jiny-site-page::error.permit");
         }
 
         return view($mainView,[

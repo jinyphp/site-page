@@ -4,7 +4,7 @@
         @method('post')
         <input type="hidden" name="_id" value="{{$id}}">
 
-        @include('jinypage::ui.widget.markdown')
+        @include('jiny-site-page::ui.widget.markdown')
 
         <div class="flex justify-between pt-4">
             <div></div>

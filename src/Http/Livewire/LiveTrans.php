@@ -1,13 +1,12 @@
 <?php
-
-namespace Jiny\Pages\Http\Livewire;
+namespace Jiny\Site\Page\Http\Livewire;
 
 use Illuminate\Support\Facades\Blade;
 use Livewire\Component;
 use Illuminate\Support\Facades\DB;
 
 use Webuni\FrontMatter\FrontMatter;
-use Jiny\Pages\Http\Parsedown;
+use Jiny\Site\Page\Http\Parsedown;
 
 class LiveTrans extends Component
 {
@@ -114,6 +113,6 @@ class LiveTrans extends Component
 
     public function render()
     {
-        return view("jinypage::livewire.trans");
+        return view("jiny-site-page::livewire.trans");
     }
 }

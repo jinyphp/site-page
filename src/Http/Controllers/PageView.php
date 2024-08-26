@@ -1,13 +1,12 @@
 <?php
-
-namespace Jiny\Pages\Http\Controllers;
+namespace Jiny\Site\Page\Http\Controllers;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Auth;
 
-use Jiny\Pages\Http\Controllers\Controller;
+use Jiny\Site\Page\Http\Controllers\Controller;
 class PageView extends Controller
 {
     use \Jiny\Table\Http\Livewire\Permit;
@@ -33,7 +32,7 @@ class PageView extends Controller
         if (isset($this->actions['view_layout'])) {
             $mainView = $this->actions['view_layout'];
         } else {
-            $mainView = "jinypage::main";
+            $mainView = "jiny-site-page::main";
         }
 
         // 테마지정
@@ -48,7 +47,7 @@ class PageView extends Controller
 
         } else {
             // 권한없음
-            $this->actions['view_content'] = "jinypage::error.permit";
+            $this->actions['view_content'] = "jiny-site-page::error.permit";
         }
 
         return view($mainView,['actions'=>$this->actions]);

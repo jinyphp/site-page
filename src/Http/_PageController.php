@@ -163,7 +163,7 @@ class PageController extends Controller
             }
         }
 
-        return "jinypage::markdown";
+        return "jiny-site-page::markdown";
     }
 
 }

@@ -17,9 +17,9 @@ class RouteController extends ResourceController
         ## 테이블 정보
         $this->actions['table'] = "site_route";
 
-        $this->actions['view_filter'] = "jinypage::admin.route.filter";
-        $this->actions['view_list'] = "jinypage::admin.route.list";
-        $this->actions['view_form'] = "jinypage::admin.route.form";
+        $this->actions['view_filter'] = "jiny-site-page::admin.route.filter";
+        $this->actions['view_list'] = "jiny-site-page::admin.route.list";
+        $this->actions['view_form'] = "jiny-site-page::admin.route.form";
 
 
         // 메뉴 설정

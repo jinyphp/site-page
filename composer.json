@@ -1,6 +1,6 @@
 {
-    "name": "jiny/pages",
-    "description": "Pages for Laravel",
+    "name": "jiny/site-page",
+    "description": "Pages for JinySite",
     "type": "library",
     "license": "MIT",
     "authors": [
@@ -11,13 +11,11 @@
     ],
     "minimum-stability": "dev",
     "require": {
-        "erusev/parsedown": "^1.7",
-        "webuni/front-matter": "^1.3",
-        "livewire/livewire": "^2.12"
+        "php": "^8.2"
     },
     "autoload": {
         "psr-4": {
-            "Jiny\\Pages\\":"src/"
+            "Jiny\\Site\\Page\\":"src/"
         },
         "files" : [
             "src/Helpers/Helper.php"
@@ -26,7 +24,7 @@
     "extra": {
         "laravel": {
             "providers": [
-                "Jiny\\Pages\\JinyPageServiceProvider"
+                "Jiny\\Site\\Pages\\JinySitePageServiceProvider"
             ]
         }
     }

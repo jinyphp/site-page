@@ -7,7 +7,7 @@
         @endif
 
         {{-- Admin Rule Setting --}}
-        @include('jinypage::setPageRule')
+        @include('jiny-site-page::setPageRule')
 
     </x-theme-layout>
 </x-theme>

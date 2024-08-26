@@ -1,6 +1,5 @@
 <?php
-
-namespace Jiny\Pages\API\Controllers;
+namespace Jiny\Site\Page\API\Controllers;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;

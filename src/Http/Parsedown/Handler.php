@@ -2,7 +2,7 @@
 /**
  * Modified Parsedown
  */
-namespace Jiny\Pages\Http\Parsedown;
+namespace Jiny\Site\Page\Http\Parsedown;
 
 use \Jiny\Html\CTag;
 

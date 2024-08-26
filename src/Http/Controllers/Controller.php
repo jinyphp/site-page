@@ -1,10 +1,8 @@
 <?php
-
-namespace Jiny\Pages\Http\Controllers;
+namespace Jiny\Site\Page\Http\Controllers;
 
 use App\Http\Controllers\Controller as LaravelController;
 use Illuminate\Http\Request;
-
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Route;
 

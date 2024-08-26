@@ -1,6 +1,5 @@
 <?php
-
-namespace Jiny\Pages\Http\Controllers\Admin;
+namespace Jiny\Site\Page\Http\Controllers\Admin;
 
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
@@ -17,11 +16,11 @@ class FilesController extends ResourceController
         ## 테이블 정보
         //$this->actions['table'] = "site_posts";
 
-        $this->actions['view_main'] = "jinypage::admin.lists.main";
+        $this->actions['view_main'] = "jiny-site-page::admin.lists.main";
 
-        //$this->actions['view_filter'] = "jinypage::admin.posts.filter";
-        $this->actions['view_list'] = "jinypage::admin.lists.list";
-        $this->actions['view_form'] = "jinypage::admin.lists.form";
+        //$this->actions['view_filter'] = "jiny-site-page::admin.posts.filter";
+        $this->actions['view_list'] = "jiny-site-page::admin.lists.list";
+        $this->actions['view_form'] = "jiny-site-page::admin.lists.form";
 
         $this->actions['file_path'] = resource_path("views");
 

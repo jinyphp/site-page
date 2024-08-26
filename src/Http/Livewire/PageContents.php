@@ -1,13 +1,12 @@
 <?php
-
-namespace Jiny\Pages\Http\Livewire;
+namespace Jiny\Site\Page\Http\Livewire;
 
 use Illuminate\Support\Facades\Blade;
 use Livewire\Component;
 use Illuminate\Support\Facades\DB;
 
 use Webuni\FrontMatter\FrontMatter;
-use Jiny\Pages\Http\Parsedown;
+use Jiny\Site\Page\Http\Parsedown;
 
 use \Jiny\Html\CTag;
 use Livewire\WithFileUploads;
@@ -43,17 +42,17 @@ class PageContents extends Component
                     $this->content = "";
                 }
 
-                return view("jinypage::livewire.contents.widget",['row'=>$row]);
+                return view("jiny-site-page::livewire.contents.widget",['row'=>$row]);
 
             } else if($row->type == "image") {
 
-                return view("jinypage::livewire.contents.widget",['row'=>$row]);
+                return view("jiny-site-page::livewire.contents.widget",['row'=>$row]);
             }
         }
 
 
         // id값이 없는 경우
-        return view("jinypage::livewire.contents.section");
+        return view("jiny-site-page::livewire.contents.section");
     }
 
     protected $listeners = ['sectionOpen','sectionClose'];

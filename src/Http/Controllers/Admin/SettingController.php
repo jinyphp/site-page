@@ -1,13 +1,10 @@
 <?php
-
-namespace Jiny\Pages\Http\Controllers\Admin;
+namespace Jiny\Site\Page\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
-
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Route;
-
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Schema;
 
@@ -26,7 +23,7 @@ class SettingController extends ConfigController
         //$this->actions['view_main'] = "jinytable::admin.setting.main";
         //$this->actions['view_title'] = "jinytable::admin.setting.title";
         // $this->actions['view_list'] = "jinytable::admin.setting.list";
-        $this->actions['view_form'] = "jinypage::admin.setting.form";
+        $this->actions['view_form'] = "jiny-site-page::admin.setting.form";
 
 
         // 메뉴 설정

@@ -1,6 +1,5 @@
 <?php
-
-namespace Jiny\Pages\API\Controllers;
+namespace Jiny\Site\Page\API\Controllers;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
@@ -8,8 +7,6 @@ use Illuminate\Support\Facades\DB;
 
 class UiWidget extends Controller
 {
-
-
     public function __construct()
     {
 
@@ -20,7 +17,7 @@ class UiWidget extends Controller
         $id = $requet->id;
         $row = DB::table("jiny_pages_content")->where('id', $id)->first();
         //dump($row->padding);
-        return view('jinypage::ui.widget.widget',[
+        return view('jiny-site-page::ui.widget.widget',[
             'id'=>$id,
             'row'=>$row
         ]);

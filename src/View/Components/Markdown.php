@@ -1,5 +1,5 @@
 <?php
-namespace Jiny\Pages\View\Components;
+namespace Jiny\Site\Page\View\Components;
 
 use Illuminate\View\Component;
 use Illuminate\Support\Facades\View;

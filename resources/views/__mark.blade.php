@@ -558,7 +558,7 @@
 
 
         {{-- Admin Rule Setting --}}
-        @include('jinypage::setMarkRule')
+        @include('jiny-site-page::setMarkRule')
 
     </x-theme-layout>
 </x-theme>

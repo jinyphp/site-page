@@ -1,22 +1,16 @@
 <?php
+namespace Jiny\Site\Page\Http;
+
+use \Jiny\Site\Page\Http\Parsedown\Text;
+use \Jiny\Site\Page\Http\Parsedown\Block;
+use \Jiny\Site\Page\Http\Parsedown\Handler;
+use \Jiny\Site\Page\Http\Parsedown\Trans;
+use \Jiny\Polyglot\Message;
+use \Jiny\Html\CTag;
+
 /**
  * Modified Parsedown
  */
-namespace Jiny\Pages\Http;
-
-
-
-use \Jiny\Pages\Http\Parsedown\Text;
-
-use \Jiny\Pages\Http\Parsedown\Block;
-use \Jiny\Pages\Http\Parsedown\Handler;
-
-use \Jiny\Pages\Http\Parsedown\Trans;
-
-use \Jiny\Polyglot\Message;
-
-use \Jiny\Html\CTag;
-
 class Parsedown
 {
     use Text;

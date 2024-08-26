@@ -7,7 +7,7 @@
         </x-markdown>
 
         {{-- Admin Rule Setting --}}
-        @include('jinypage::setPostRule')
+        @include('jiny-site-page::setPostRule')
 
     </x-theme-layout>
 </x-theme>

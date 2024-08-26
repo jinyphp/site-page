@@ -56,8 +56,8 @@ if(!function_exists("module_fallback")) {
         }
 
         // 페이지 없음 404 출력
-        if (view()->exists("jinypage::errors.404")) {
-            return view("jinypage::errors.404");
+        if (view()->exists("jiny-site-page::errors.404")) {
+            return view("jiny-site-page::errors.404");
         }
 
     })->middleware('web');

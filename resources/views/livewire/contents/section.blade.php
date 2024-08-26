@@ -5,7 +5,7 @@
     <x-dialog-modal wire:model="popupSection" maxWidth="2xl">
         <x-slot name="content">
             {{ $sectionId }} 팝업 섹션 관리
-            @include('jinypage::livewire.contents.form')
+            @include('jiny-site-page::livewire.contents.form')
         </x-slot>
 
         <x-slot name="footer">

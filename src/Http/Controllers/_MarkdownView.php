@@ -29,7 +29,7 @@ class MarkdownView extends Controller
         if (isset($this->actions['view_layout'])) {
             $mainView = $this->actions['view_layout'];
         } else {
-            $mainView = "jinypage::mark";
+            $mainView = "jiny-site-page::mark";
         }
 
         // 사이트 테마 지정
@@ -43,9 +43,9 @@ class MarkdownView extends Controller
 
         } else {
             // 권한없음
-            //$this->actions['view_content'] = "jinypage::error.permit";
+            //$this->actions['view_content'] = "jiny-site-page::error.permit";
             //$slot = "";
-            $slot = view("jinypage::error.permit");
+            $slot = view("jiny-site-page::error.permit");
         }
 
         return view($mainView,[

@@ -1467,7 +1467,7 @@
         </div>
 
         {{-- Admin Rule Setting --}}
-        @include('jinypage::setMarkRule')
+        @include('jiny-site-page::setMarkRule')
 
         <!-- 템플릿 -->
         <style>

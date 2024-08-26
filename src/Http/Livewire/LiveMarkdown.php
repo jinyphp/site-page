@@ -1,20 +1,17 @@
 <?php
-
-namespace Jiny\Pages\Http\Livewire;
+namespace Jiny\Site\Page\Http\Livewire;
 
 use Illuminate\Support\Facades\Blade;
 use Livewire\Component;
 use Illuminate\Support\Facades\DB;
 
 use Webuni\FrontMatter\FrontMatter;
-use Jiny\Pages\Http\Parsedown;
+use Jiny\Site\Page\Http\Parsedown;
 
 use \Jiny\Html\CTag;
 
 class LiveMarkdown extends Component
 {
-
-
     public $content;  // 원본 데이터
     public $markdown; // 변환데이터
 
@@ -48,7 +45,7 @@ class LiveMarkdown extends Component
         //$objHTml = $this->transParser($this->content);
         */
 
-        return view("jinypage::livewire.markdown");
+        return view("jiny-site-page::livewire.markdown");
     }
 
     protected $listeners = ['reflashPage'];

@@ -3,7 +3,7 @@
     {{--@if ($popupSection)--}}
     <x-dialog-modal wire:model="popupSection" maxWidth="2xl">
         <x-slot name="content">
-            @include('jinypage::livewire.contents.markdown')
+            @include('jiny-site-page::livewire.contents.markdown')
         </x-slot>
 
         <x-slot name="footer">

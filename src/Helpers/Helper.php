@@ -1,7 +1,4 @@
 <?php
-/**
- * Helpers
- */
 use \Jiny\Html\CTag;
 
 function xDirectory($tree)

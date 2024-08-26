@@ -1,12 +1,11 @@
 <?php
+namespace Jiny\Site\Page\Http\Livewire;
 
-namespace Jiny\Pages\Http\Livewire;
-
-use Jiny\Pages\Http\Livewire\SetPageRule;
+use Jiny\Site\Page\Http\Livewire\SetPageRule;
 class SetPostRule extends SetPageRule
 {
     public function render()
     {
-        return view("jinypage::livewire.popup.postrules");
+        return view("jiny-site-page::livewire.popup.postrules");
     }
 }

@@ -1,14 +1,14 @@
 <?php
-
-namespace Jiny\Pages\Http\Controllers;
+namespace Jiny\Site\Page\Http\Controllers;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Route;
 use \Jiny\Html\CTag;
-use Jiny\Pages\Http\Parsedown;
 
-use Jiny\Pages\Http\Controllers\Controller;
+use Jiny\Site\Page\Http\Parsedown;
+
+use Jiny\Site\Page\Http\Controllers\Controller;
 class MarkdownView extends Controller
 {
     use \Jiny\Table\Http\Livewire\Permit;
@@ -31,7 +31,7 @@ class MarkdownView extends Controller
         if (isset($this->actions['view_layout'])) {
             $mainView = $this->actions['view_layout'];
         } else {
-            $mainView = "jinypage::mark";
+            $mainView = "jiny-site-page::mark";
         }
 
         // 사이트 테마 지정
@@ -45,9 +45,9 @@ class MarkdownView extends Controller
 
         } else {
             // 권한없음
-            //$this->actions['view_content'] = "jinypage::error.permit";
+            //$this->actions['view_content'] = "jiny-site-page::error.permit";
             //$slot = "";
-            $pages = view("jinypage::error.permit");
+            $pages = view("jiny-site-page::error.permit");
         }
 
 

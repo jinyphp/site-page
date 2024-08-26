@@ -1,17 +1,14 @@
 <?php
-
-namespace Jiny\Pages\Http\Controllers;
+namespace Jiny\Site\Page\Http\Controllers;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
-
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Facades\Route;
 
 use Jiny\Members\Http\Controllers\CrudController;
-
 class AdminPages extends Controller
 {
     public function index()
@@ -21,7 +18,7 @@ class AdminPages extends Controller
         $dirTree = $this->dirTree($path);
         //dd($dirTree);
 
-        return view("jinypage::admin.pages",['tree'=>$this->htmlUlTree($dirTree)]);
+        return view("jiny-site-page::admin.pages",['tree'=>$this->htmlUlTree($dirTree)]);
     }
 
     private function htmlUlTree($tree)
