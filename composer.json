@@ -24,7 +24,7 @@
     "extra": {
         "laravel": {
             "providers": [
-                "Jiny\\Site\\Pages\\JinySitePageServiceProvider"
+                "Jiny\\Site\\Page\\JinySitePageServiceProvider"
             ]
         }
     }
