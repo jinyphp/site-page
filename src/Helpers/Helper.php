@@ -1,5 +1,32 @@
 <?php
 use \Jiny\Html\CTag;
+use Illuminate\Support\Facades\Request;
+
+function sitePageWidgets($uri=null)
+{
+    if(!$uri) {
+        $uri = "/".Request::path();
+    }
+
+
+    $path = resource_path('www');
+    $slot = www_slot();
+
+    $path .= DIRECTORY_SEPARATOR.$slot;
+    $path .= str_replace('/', DIRECTORY_SEPARATOR, $uri);
+    $path .= DIRECTORY_SEPARATOR."widgets.json";
+
+    if(file_exists($path)) {
+        $widgets = json_file_decode($path);
+    } else {
+        $widgets = [];
+    }
+
+    //dd($widgets);
+    return $widgets;
+
+    // return DB::table('site_page_widgets')->where('route', $uri)->get();
+}
 
 function xDirectory($tree)
 {

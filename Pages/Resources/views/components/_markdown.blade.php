@@ -1,0 +1,1 @@
+@livewire('LiveMarkdown',['content'=>$slot->toHtml()])

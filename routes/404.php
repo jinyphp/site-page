@@ -63,13 +63,3 @@ if(!function_exists("module_fallback")) {
     })->middleware('web');
 }
 
-
-/*
-use Modules\Fallback\API\Controllers\Upload404;
-Route::middleware(['web'])
-->group(function(){
-    Route::post('/api/upload/404', [Upload404::class,"dropzone"]);
-});
-*/
-
-

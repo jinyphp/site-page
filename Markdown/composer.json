@@ -1,0 +1,23 @@
+{
+    "name": "jinyerp/markdown",
+    "description": "",
+    "authors": [
+        {
+            "name": "hojinlee",
+            "email": "infohojin@gmail.com"
+        }
+    ],
+    "extra": {
+        "laravel": {
+            "providers": [],
+            "aliases": {
+
+            }
+        }
+    },
+    "autoload": {
+        "psr-4": {
+            "Modules\\Markdown\\": ""
+        }
+    }
+}

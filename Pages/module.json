@@ -1,0 +1,16 @@
+{
+    "name": "Pages",
+    "alias": "pages",
+    "description": "",
+    "keywords": [],
+    "priority": 0,
+    "providers": [
+        "Modules\\Pages\\Providers\\PagesServiceProvider"
+    ],
+    "aliases": {},
+    "files": [
+        "Helpers/Helper.php"
+    ],
+    "requires": [],
+    "version":"0.1"
+}

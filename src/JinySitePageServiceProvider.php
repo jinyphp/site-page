@@ -39,13 +39,24 @@ class JinySitePageServiceProvider extends ServiceProvider
         $this->app->afterResolving(BladeCompiler::class, function () {
             Livewire::component('PageContextPopup', \Jiny\Site\Page\Http\Livewire\PageContents::class);
 
-            Livewire::component('LiveMarkdown', \Jiny\Site\Page\Http\Livewire\LiveMarkdown::class);
-            Livewire::component('LiveTrans', \Jiny\Site\Page\Http\Livewire\LiveTrans::class);
+            //Livewire::component('LiveMarkdown', \Jiny\Site\Page\Http\Livewire\LiveMarkdown::class);
+            //Livewire::component('LiveTrans', \Jiny\Site\Page\Http\Livewire\LiveTrans::class);
 
             Livewire::component('setPageRule', \Jiny\Site\Page\Http\Livewire\SetPageRule::class);
             Livewire::component('setMarkRule', \Jiny\Site\Page\Http\Livewire\SetMarkRule::class);
             Livewire::component('setPostRule', \Jiny\Site\Page\Http\Livewire\SetPostRule::class);
 
+            ## Site Widget Page 관리
+            Livewire::component('site-design-widgets', \Jiny\Site\Page\Http\Livewire\SiteDesginWidgets::class);
+            //Livewire::component('site-widget-edit', \Jiny\Site\Page\Http\Livewire\SiteWidgetEdit::class);
+            Livewire::component('site-widget-dropzone',
+                \Jiny\Site\Page\Http\Livewire\SiteWidgetDropzone::class);
+
+            ## Widgets
+            Livewire::component('widget-markdown', \Jiny\Site\Page\Http\Livewire\WidgetMarkdown::class);
+            Livewire::component('widget-blade', \Jiny\Site\Page\Http\Livewire\WidgetBlade::class);
+            Livewire::component('widget-image', \Jiny\Site\Page\Http\Livewire\WidgetImage::class);
+            Livewire::component('widget-html', \Jiny\Site\Page\Http\Livewire\WidgetHtml::class);
 
         });
     }

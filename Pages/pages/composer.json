@@ -1,0 +1,24 @@
+{
+    "name": "jiny/pages",
+
+    "authors": [
+        {
+            "name": "hojinlee",
+            "email": "infohojin@gmail.com"
+        }
+    ],
+    "minimum-stability": "dev",
+    "require": {
+        "erusev/parsedown": "^1.7",
+        "webuni/front-matter": "^1.3"
+    },
+    "autoload": {
+        "psr-4": {
+            "Jiny\\Pages\\":"src/"
+        },
+        "files" : [
+            "src/Helpers/Helper.php"
+        ]
+    }
+
+}

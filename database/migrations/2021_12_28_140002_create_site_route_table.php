@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class CreateSiteRouteTable extends Migration
+return new class extends Migration
 {
     /**
      * Run the migrations.
@@ -28,6 +28,7 @@ class CreateSiteRouteTable extends Migration
             $table->unsignedBigInteger('cnt')->default(0);
 
             $table->string('description')->nullable();
+
             // 작업자ID
             $table->unsignedBigInteger('user_id')->default(0);
         });
@@ -42,4 +43,4 @@ class CreateSiteRouteTable extends Migration
     {
         Schema::dropIfExists('site_route');
     }
-}
+};

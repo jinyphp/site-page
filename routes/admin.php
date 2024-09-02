@@ -2,6 +2,7 @@
 
 
 
+
 /**
  * pages 관리자 페이지
  */
@@ -32,20 +33,4 @@ Route::middleware(['web'])
     });
 
 
-use Jiny\Pages\API\Controllers\Section;
-use Jiny\Pages\API\Controllers\Panel;
-use Jiny\Pages\API\Controllers\UiWidget;
-Route::middleware(['web'])
-    ->group(function(){
-        Route::post('/api/pages/delete',[Section::class,"delete"]);
-        Route::post('/api/pages/pos',[Section::class,"pos"]);
-        Route::post('/api/pages/move',[Section::class,"move"]);
-        Route::post('/api/pages/resize',[Section::class,"resize"]);
-
-        Route::get('/api/pages/pannel/section/{id}',[Panel::class,"section"]);
-        Route::post('/api/pages/pannel/section',[Panel::class,"sectionUpdate"]);
-
-        Route::get('/api/pages/ui/widget/{id}',[UiWidget::class,"index"]);
-        Route::post('/api/pages/ui/Widget',[UiWidget::class,"update"]);
-    });
 */

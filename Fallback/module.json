@@ -1,0 +1,14 @@
+{
+    "name": "Fallback",
+    "alias": "fallback",
+    "description": "",
+    "keywords": [],
+    "priority": 0,
+    "providers": [
+        "Modules\\Fallback\\Providers\\FallbackServiceProvider"
+    ],
+    "aliases": {},
+    "files": [],
+    "requires": [],
+    "version":"0.1"
+}
