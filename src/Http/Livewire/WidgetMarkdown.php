@@ -15,6 +15,9 @@ use Livewire\Attributes\On;
 
 class WidgetMarkdown extends Component
 {
+    public $actions = [];
+    public $action_path;
+
     public $uri;
     public $slot;
     public $path;
@@ -23,7 +26,7 @@ class WidgetMarkdown extends Component
     public $widget = [];
     public $widget_id;
     public $pages = [];
-    public $content = "hello";
+    public $content = "markdown file";
 
     public $mode;
     public $editable = false;
@@ -32,8 +35,13 @@ class WidgetMarkdown extends Component
 
     use \Jiny\Widgets\Http\Trait\DesignMode;
 
-
     public function mount()
+    {
+        $this->init();
+
+    }
+
+    private function init()
     {
         $this->uri = Request::path();
         $this->slot = $this->getSlot();
@@ -46,7 +54,6 @@ class WidgetMarkdown extends Component
                 $path .= DIRECTORY_SEPARATOR.str_replace('/', DIRECTORY_SEPARATOR, $this->uri);
             }
 
-            //$this->path = $path.DIRECTORY_SEPARATOR.$this->widget['path'];
             $this->file = $path.DIRECTORY_SEPARATOR.$this->widget['path'];
             $this->path = $path; //.DIRECTORY_SEPARATOR.$this->widget['path'];
         }
@@ -60,35 +67,34 @@ class WidgetMarkdown extends Component
         }
 
 
+        // actions 파일 경로 체크
+        $this->action_path = resource_path('actions');
+        $this->action_path .= DIRECTORY_SEPARATOR;
+        $this->action_path .= str_replace('/', DIRECTORY_SEPARATOR, $this->uri);
+        $this->action_path .= ".json";
+
+        // actions 데이터 읽기
+        $this->actions = $this->loadActions();
+    }
+
+    private function loadActions()
+    {
+        if(file_exists($this->action_path)) {
+            $actions = json_file_decode($this->action_path);
+        } else {
+            $actions = [];
+        }
+
+        return $actions;
     }
 
     public function render()
     {
-        // if($this->mode == "modify") {
-
-        //     return view("jiny-site-page::design.widgets.markdown_edit");
-        // }
-
-        /*
-        if(isset($this->widget['path'])) {
-            $path = resource_path('www');
-            if($this->slot) {
-                $path = $path.DIRECTORY_SEPARATOR.$this->slot;
-                $path .= DIRECTORY_SEPARATOR.str_replace('/', DIRECTORY_SEPARATOR, $this->uri);
-            }
-
-            $path = $path.DIRECTORY_SEPARATOR.$this->widget['path'];
-            if(is_file($path)) {
-                $body = file_get_contents($path);
-
-                $Parsedown = new Parsedown();
-                $this->content = $Parsedown->parse($body);
-            }
-        }
-            */
-
-        return view("jiny-site-page::design.widgets.markdown");
+        //$this->content .= $this->action_path;
+        return view("jiny-site-page::widgets.markdown");
     }
+
+
 
 
     public function modify()
@@ -96,13 +102,7 @@ class WidgetMarkdown extends Component
         $this->mode = "modify";
         $this->editable = true;
 
-        // if(is_file($this->path)) {
-        //     $this->markdown = file_get_contents($this->path);
-        // }
-        if(is_file($this->file)) {
-            $this->forms['markdown'] = file_get_contents($this->file);
-        }
-
+        $this->forms['markdown'] = $this->markdown;
         $this->forms['filename'] = $this->widget['path'];
     }
 
@@ -113,47 +113,72 @@ class WidgetMarkdown extends Component
 
     }
 
+    private function saveMarkdownFile()
+    {
+        if(isset($this->forms['markdown'])) {
+            $this->markdown = $this->forms['markdown'];
+            file_put_contents($this->file, $this->forms['markdown']);
+        }
+    }
+
+    private function convMarkToHtml()
+    {
+        $Parsedown = new Parsedown();
+        $this->content = $Parsedown->parse($this->markdown);
+    }
+
     public function update()
     {
         $this->mode = null;
         $this->editable = false;
 
-        //file_put_contents($this->path, $this->markdown);
-        //dd($this->path);
-        if(isset($this->forms['markdown'])) {
-            file_put_contents($this->file, $this->forms['markdown']);
-        }
+        // 입력한 form을 마크다운 파일로 저장
+        $this->saveMarkdownFile();
 
-        $Parsedown = new Parsedown();
-        $this->content = $Parsedown->parse($this->markdown);
-
-
-        // json 수정 저장
-        $json = json_file_decode($this->path.DIRECTORY_SEPARATOR."widgets.json");
-        foreach($json as $i => $item) {
-            if($item['path'] == $this->widget['path']) {
-                break;
-            }
-        }
+        // 화면 갱신을 위하여 마크다운 파일을 html 로 변환
+        $this->convMarkToHtml();
 
         // 파일이름 변경 확인
-        if($this->widget['path'] != $this->forms['filename']) {
-            // 파일명 변경
-            $oldFile = $this->path.DIRECTORY_SEPARATOR.$this->widget['path'];
-            $newFile = $this->path.DIRECTORY_SEPARATOR.$this->forms['filename'];
-            rename($oldFile, $newFile);
-
-            // json 수정 저장
-            $this->widget['path'] = $this->forms['filename'];
-            $json[$i] = $this->widget;
-            json_file_encode($this->path.DIRECTORY_SEPARATOR."widgets.json", $json);
-
+        if($this->isEditFilename()) {
+            $this->widgetJsonFileUpdate($this->widget_id);
         }
-
-
 
         $this->forms = [];
     }
+
+    private function isEditFilename()
+    {
+        // 파일이름 변경 확인
+        if(isset($this->forms['filename']) &&
+            $this->widget['path'] != $this->forms['filename']) {
+            // 파일명 변경
+            $oldFile = $this->path.DIRECTORY_SEPARATOR.$this->widget['path'];
+            if(file_exists($oldFile)) {
+                $newFile = $this->path.DIRECTORY_SEPARATOR.$this->forms['filename'];
+                rename($oldFile, $newFile);
+
+                // json 수정 저장
+                $this->widget['path'] = $this->forms['filename'];
+            }
+
+            return true;
+        }
+
+        return false;
+    }
+
+    private function widgetJsonFileUpdate($id)
+    {
+        // json 수정 저장
+        $this->actions['widgets'][$id] = $this->widget;
+        //dd($this->action_path);
+        json_file_encode($this->action_path, $this->actions);
+    }
+
+
+
+
+
 
     public function delete()
     {
@@ -169,16 +194,18 @@ class WidgetMarkdown extends Component
             }
 
             //$json = $path.DIRECTORY_SEPARATOR."widgets.json";
-            $json = json_file_decode($path.DIRECTORY_SEPARATOR."widgets.json");
+            // $json = json_file_decode($path.DIRECTORY_SEPARATOR."widgets.json");
+            $json = $this->actions['widgets'];
             foreach($json as $i => $item) {
                 if($item['path'] == $this->widget['path']) {
                     break;
                 }
             }
-            unset($json[$i]); //
+            unset($this->actions['widgets'][$i]); //
 
             // 다시 저장
-            json_file_encode($path.DIRECTORY_SEPARATOR."widgets.json", $json);
+            // json_file_encode($path.DIRECTORY_SEPARATOR."widgets.json", $json);
+            json_file_encode($this->action_path, $this->actions);
 
 
             // 페이지 리로드 이벤트 발생

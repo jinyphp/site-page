@@ -6,9 +6,12 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Auth;
 
+/**
+ * 페이지 drag upload
+ */
 class Upload404 extends Controller
 {
-    const UPLOAD = "pages";
+    //const UPLOAD = "pages";
     private $path;
 
     public function __construct()
@@ -19,49 +22,59 @@ class Upload404 extends Controller
     public function dropzone(Request $requet)
     {
         $uploaded = [];
-        //$uploaded []= "uploaded";
-        //return response()->json($uploaded);
 
         if (!empty($_FILES['file']['name'][0])) {
+
             // 여러개 파일 등록
             foreach ($_FILES['file']['name'] as $pos => $name) {
                 $info = pathinfo($name);
 
+                ## 마크다운 파일
                 if($info['extension'] == "md") {
                     // markdown upload
                     $uploaded = $this->markdown($pos, $name);
                     $uploaded['info'] = $info;
 
                 }
+                ## html, html 파일
                 else if($info['extension'] == "htm" || $info['extension'] == "html") {
                     $uploaded = $this->html($pos, $name);
                     $uploaded['info'] = $info;
                 }
-                else if($info['extension'] == "jpg" || $info['extension'] == "gif" || $info['extension'] == "png") {
+                ## 이미지 파일
+                else if($info['extension'] == "jpg"
+                    || $info['extension'] == "gif"
+                    || $info['extension'] == "png"
+                    || $info['extension'] == "svg") {
                     $uploaded = $this->image($pos, $name);
                     $uploaded['info'] = $info;
 
                 }
-                // php blade 파일 업로드
+                ## php blade 파일 업로드
                 else if($info['extension'] == "php") {
                     $uploaded = $this->blade($pos, $name);
                     $uploaded['info'] = $info;
 
                 }
             }
+
         }
 
         return response()->json($uploaded);
     }
 
+    /**
+     * 공용, 파일 업드로 메소드
+     */
     private function upload($pos, $name)
     {
         $uploaded = [];
 
-        // 경로 저장소 처리
+        // 슬록 확인
         $slot = $this->getSlot();
         $uploaded['slot'] = $slot;
 
+        // 업로드 경로 확인
         $path = resource_path("www");
         if($slot) {
             $path .= DIRECTORY_SEPARATOR.$slot;
@@ -81,6 +94,7 @@ class Upload404 extends Controller
         $source = $_FILES['file']['tmp_name'][$pos];
         $uploaded['source'] = $source;
 
+        // 업로드된 temp 파일을 실제 파일 경로로 이동
         if( move_uploaded_file($source, $filename) ){
             $uploaded['status'] = "upload success";
         }
@@ -88,7 +102,62 @@ class Upload404 extends Controller
         return $uploaded;
     }
 
+
     private function updateWidgets($element, $uploaded)
+    {
+        // Actions 파일에 widget 데이터를 삽입
+        $path = resource_path("actions");
+        $file = $path.str_replace('/',DIRECTORY_SEPARATOR, $uploaded['uri']);
+        if(!is_dir($file)) {
+            // 디렉터리 생성
+            mkdir($file,777,true);
+        }
+
+        $file .= ".json";
+        $uploaded['actions'] = $file;
+        if(file_exists($file)) {
+            $actions = json_file_decode($file);
+        } else {
+            $actions = [];
+        }
+
+        if(!isset($actions['widgets'])) {
+            $actions['widgets'] = [];
+        }
+
+        //$actions['file'] = $file;
+        //return $actions;
+
+        $key = uniqid(mt_rand().$element, true);
+        $key = str_replace('.', '', $key); // 소수점(.)을 빈 문자열로 대체하여 제거
+
+        $actions['widgets'] []= [
+            'created_at' => date("Y-m-d H:i:s"),
+                'updated_at'=>date("Y-m-d H:i:s"),
+                'enable'=>1,
+                'key' => $key,
+
+                'route' => $uploaded['uri'],
+                'path' => $uploaded['name'],
+
+                'element' => $element,
+                'pos'=>1,
+                'ref'=>0,
+                'level'=>1
+        ];
+
+        // json 데이터를 파일로 저장
+        json_file_encode($file, $actions);
+
+        return $uploaded;
+    }
+
+
+
+    /**
+     * 슬롯 리소스 위치에 json 파일 수정
+     */
+    private function updateJsonSlot()
     {
         // json 파일 저장
         $file = $uploaded['path'].DIRECTORY_SEPARATOR."widgets.json";
@@ -100,10 +169,14 @@ class Upload404 extends Controller
         }
 
 
+        $key = uniqid(mt_rand().$element, true);
+        $key = str_replace('.', '', $key); // 소수점(.)을 빈 문자열로 대체하여 제거
+
         $widgets []= [
             'created_at' => date("Y-m-d H:i:s"),
                 'updated_at'=>date("Y-m-d H:i:s"),
                 'enable'=>1,
+                'key' => $key,
 
                 'route' => $uploaded['uri'],
                 'path' => $uploaded['name'],
@@ -115,8 +188,6 @@ class Upload404 extends Controller
         ];
 
         json_file_encode($file, $widgets);
-
-        return $uploaded;
     }
 
     /**
@@ -125,7 +196,9 @@ class Upload404 extends Controller
     private function markdown($pos, $name)
     {
         $uploaded = $this->upload($pos, $name);
-        $sectionId = $this->updateWidgets("widget-markdown", $uploaded);
+
+        $element ="widget-markdown";
+        $uploaded = $this->updateWidgets($element, $uploaded);
 
         return $uploaded;
     }
@@ -133,86 +206,23 @@ class Upload404 extends Controller
     private function html($pos, $name)
     {
         $uploaded = $this->upload($pos, $name);
-        $sectionId = $this->updateWidgets("widget-html", $uploaded);
+
+        $element = "widget-html";
+        $uploaded = $this->updateWidgets($element, $uploaded);
 
         return $uploaded;
-        /*
-        // 경로 저장소 처리
-        $url = parse_url($_POST['_uri']);
-        $path = resource_path(self::UPLOAD).$url['path'];
-        $path = str_replace("/",DIRECTORY_SEPARATOR,$path);
-        if (!is_dir($path)) mkdir($path, 755, true);
 
-        $filename = $path.DIRECTORY_SEPARATOR.$name;
-        $source = $_FILES['file']['tmp_name'][$pos];
-        if( move_uploaded_file($source, $filename) ){
-            $uploaded []= [
-                'name' => $name,
-                'url' => parse_url($_POST['_uri']),
-                'path' => $path
-            ];
-
-            $uploaded['file']= $filename;
-        }
-
-
-        // DB 저장, 중복여부 체크
-        $row = DB::table("jiny_route")->where('route',$url['path'])->get();
-        if($row) {
-            // 시간정보 생성
-            $forms['created_at'] = date("Y-m-d H:i:s");
-            $forms['updated_at'] = date("Y-m-d H:i:s");
-
-            $forms['enable'] = 1;
-            $forms['route'] = $url['path'];
-            $forms['type'] = "markdown:markdown";
-            $forms['path'] = $url['path']."/".$name;
-
-            // 데이터 삽입
-            DB::table("jiny_route")->insertGetId($forms);
-            $uploaded['forms'] = $forms;
-        }
-
-        // 업로드 컨덴츠 정보 등록
-
-
-
-        // 업로드 컨덴츠 정보 등록
-        $sectionId = DB::table("jiny_pages_content")->insertGetId([
-            'created_at' => date("Y-m-d H:i:s"),
-            'updated_at'=>date("Y-m-d H:i:s"),
-            'enable'=>1,
-            'route'=>$url['path'],
-
-            'element'=>"section",
-            'pos'=>1,
-            'ref'=>0,
-            'level'=>1
-        ]);
-
-        $article = DB::table("jiny_pages_content")->insertGetId([
-            'created_at' => date("Y-m-d H:i:s"),
-            'updated_at'=>date("Y-m-d H:i:s"),
-            'enable'=>1,
-            'route'=>$url['path'],
-            'path'=>$url['path']."/".$name,
-            'type'=>"html",
-            'pos'=>1,
-            'ref'=> $sectionId,
-            'level'=>2
-        ]);
-
-
-        return $uploaded;
-        */
     }
 
     private function image($pos, $name)
     {
         $uploaded = $this->upload($pos, $name);
-        //$sectionId = $this->updateWidgets("widget-image", $uploaded);
 
         $element ="widget-image";
+        $uploaded['name'] = [ $uploaded['name'] ];
+        $uploaded = $this->updateWidgets($element, $uploaded);
+
+        /*
         // json 파일 저장
         $file = $uploaded['path'].DIRECTORY_SEPARATOR."widgets.json";
 
@@ -238,6 +248,7 @@ class Upload404 extends Controller
         ];
 
         json_file_encode($file, $widgets);
+        */
 
         return $uploaded;
     }
@@ -248,116 +259,9 @@ class Upload404 extends Controller
     private function blade($pos, $name)
     {
         $uploaded = $this->upload($pos, $name);
-        $sectionId = $this->updateWidgets("widget-blade", $uploaded);
 
-        return $uploaded;
-
-        // $uploaded = [];
-
-        // // 경로 저장소 처리
-        // $slot = $this->getSlot();
-        // $uploaded['slot'] = $slot;
-
-        // $path = resource_path("www");
-        // if($slot) {
-        //     $path .= DIRECTORY_SEPARATOR.$slot;
-        // }
-
-        // $uri = parse_url($_POST['_uri'])['path'];
-        // $uploaded['uri'] = $uri;
-
-        // $path .= str_replace("/", DIRECTORY_SEPARATOR, $uri);
-        // $uploaded['path'] = $path;
-
-
-        // $filename = $path.DIRECTORY_SEPARATOR.$name;
-        // $uploaded['file'] = $filename;
-
-        // $source = $_FILES['file']['tmp_name'][$pos];
-        // $uploaded['source'] = $source;
-
-        // if( move_uploaded_file($source, $filename) ){
-        //     $uploaded['status'] = "upload success";
-        // }
-
-        // $result = DB::table('site_page_widgets')
-        //     ->where('route',$uri)
-        //     ->where('path',$name)
-        //     ->first();
-
-        // // 업로드 컨덴츠 정보 등록
-        // if(!$result) {
-        //     $sectionId = DB::table('site_page_widgets')->insertGetId([
-        //         'created_at' => date("Y-m-d H:i:s"),
-        //         'updated_at'=>date("Y-m-d H:i:s"),
-        //         'enable'=>1,
-
-        //         'route' => $uri,
-        //         'path' => $name,
-        //         'element' => "widget-blade",
-        //         'pos'=>1,
-        //         'ref'=>0,
-        //         'level'=>1
-        //     ]);
-        // }
-
-
-
-
-
-        /*
-
-        .$url['path'];
-        $path = str_replace("/",DIRECTORY_SEPARATOR,$path);
-        if (!is_dir($path)) mkdir($path, 755, true);
-
-        $filename = $path.DIRECTORY_SEPARATOR.$name;
-
-        if( move_uploaded_file($source, $filename) ){
-            $uploaded []= [
-                'name' => $name,
-                'url' => parse_url($_POST['_uri']),
-                'path' => $path
-            ];
-
-            $uploaded['file']= $filename;
-        }
-
-
-        // DB 저장, 중복여부 체크
-        $row = DB::table("jiny_route")->where('route',$url['path'])->get();
-        if($row) {
-            // 시간정보 생성
-            $forms['created_at'] = date("Y-m-d H:i:s");
-            $forms['updated_at'] = date("Y-m-d H:i:s");
-
-            $forms['enable'] = 1;
-            $forms['route'] = $url['path'];
-            $forms['type'] = "markdown:markdown";
-            $forms['path'] = $url['path']."/".$name;
-
-            // 데이터 삽입
-            DB::table("jiny_route")->insertGetId($forms);
-            $uploaded['forms'] = $forms;
-        }
-
-
-
-
-
-
-        $article = DB::table("jiny_pages_content")->insertGetId([
-            'created_at' => date("Y-m-d H:i:s"),
-            'updated_at'=>date("Y-m-d H:i:s"),
-            'enable'=>1,
-            'route'=>$url['path'],
-            'path'=>$url['path']."/".$name,
-            'type'=>"blade",
-            'pos'=>1,
-            'ref'=> $sectionId,
-            'level'=>2
-        ]);
-        */
+        $element ="widget-blade";
+        $sectionId = $this->updateWidgets($element, $uploaded);
 
         return $uploaded;
     }
@@ -389,7 +293,6 @@ class Upload404 extends Controller
 
         return false;
     }
-
 
 
 }

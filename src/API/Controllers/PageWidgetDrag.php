@@ -16,6 +16,32 @@ class PageWidgetDrag extends Controller
     {
         $uploaded = [];
 
+        $uri = parse_url($_POST['_uri'])['path'];
+        $uploaded['uri'] = $uri;
+
+        $path = resource_path("actions");
+        $path .= str_replace('/',DIRECTORY_SEPARATOR,$uri);
+        $path .= ".json";
+        $uploaded['path'] = $path;
+
+        if(file_exists($path)) {
+            $actions = json_file_decode($path);
+        } else {
+            $actions = [];
+        }
+
+
+        //새로운 저장 목록 변환
+        $temp = [];
+        foreach($_POST['pos'] as $i) {
+            $temp []= $actions['widgets'][$i];
+        }
+
+        $actions['widgets'] = $temp; // 수정된 순서 재저장
+        json_file_encode($path, $actions);
+
+        return response()->json($uploaded);
+
         // 경로 저장소 처리
         $slot = www_slot();
         $uploaded['slot'] = $slot;
@@ -25,8 +51,7 @@ class PageWidgetDrag extends Controller
             $path .= DIRECTORY_SEPARATOR.$slot;
         }
 
-        $uri = parse_url($_POST['_uri'])['path'];
-        $uploaded['uri'] = $uri;
+
 
         $path .= str_replace("/", DIRECTORY_SEPARATOR, $uri);
         $uploaded['path'] = $path;
@@ -59,35 +84,6 @@ class PageWidgetDrag extends Controller
     {
         $uploaded = [];
         $uploaded['post'] = $_POST;
-
-        /*
-        if(isset($_POST['path'])) {
-            $rows = DB::table("jiny_pages_content")->where('path', $_POST['path'])->get();
-        } else if(isset($_POST['id'])) {
-            $rows = DB::table("jiny_pages_content")->where('id', $_POST['id'])->get();
-        }
-
-        if($rows && count($rows) == 1) {
-            // 파일만 삭제, 섹션은 제외함
-            if($rows[0]->path) {
-                $path = resource_path(self::UPLOAD).$rows[0]->path; //$_POST['path'];
-                $uploaded['pathname'] = $path;
-                if(file_exists($path)) {
-                    $uploaded['path'] = $path;
-                    unlink($path);
-                } else {
-                    $uploaded['message'] = "파일이 존재하지 않습니다.";
-                }
-            }
-
-        }
-
-        if($rows) {
-            DB::table("jiny_pages_content")->where('id', $_POST['id'])->delete();
-            //DB::table("jiny_pages_markdown")->where('path', $_POST['path'])->delete();
-            $uploaded['message2'] = $_POST['id']." deleted";
-        }
-        */
 
         return response()->json($uploaded);
     }

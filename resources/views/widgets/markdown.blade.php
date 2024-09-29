@@ -48,7 +48,7 @@
             </div>
             <div class="py-4s">
                 {!! xTextarea()
-                    ->setWire('model.defer',"markdown")
+                    ->setWire('model.defer',"forms.markdown")
                 !!}
             </div>
         </div>

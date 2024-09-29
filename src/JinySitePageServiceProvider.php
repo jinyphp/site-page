@@ -29,7 +29,7 @@ class JinySitePageServiceProvider extends ServiceProvider
         ]);
 
         ## 테마를 선택하고 app과 컨덴츠를 결합합니다.
-        Blade::component(\Jiny\Site\Page\View\Components\Markdown::class, "markdown");
+        //Blade::component(\Jiny\Site\Page\View\Components\Markdown::class, "markdown");
 
     }
 
@@ -47,16 +47,26 @@ class JinySitePageServiceProvider extends ServiceProvider
             Livewire::component('setPostRule', \Jiny\Site\Page\Http\Livewire\SetPostRule::class);
 
             ## Site Widget Page 관리
-            Livewire::component('site-design-widgets', \Jiny\Site\Page\Http\Livewire\SiteDesginWidgets::class);
-            //Livewire::component('site-widget-edit', \Jiny\Site\Page\Http\Livewire\SiteWidgetEdit::class);
+            Livewire::component('site-design-widgets',
+                \Jiny\Site\Page\Http\Livewire\SiteDesginWidgets::class);
+            Livewire::component('site-widget-loop', \Jiny\Site\Page\Http\Livewire\SiteWidgetLoop::class);
             Livewire::component('site-widget-dropzone',
                 \Jiny\Site\Page\Http\Livewire\SiteWidgetDropzone::class);
 
             ## Widgets
-            Livewire::component('widget-markdown', \Jiny\Site\Page\Http\Livewire\WidgetMarkdown::class);
-            Livewire::component('widget-blade', \Jiny\Site\Page\Http\Livewire\WidgetBlade::class);
-            Livewire::component('widget-image', \Jiny\Site\Page\Http\Livewire\WidgetImage::class);
-            Livewire::component('widget-html', \Jiny\Site\Page\Http\Livewire\WidgetHtml::class);
+            Livewire::component('widget-markdown',
+                \Jiny\Site\Page\Http\Livewire\WidgetMarkdown::class);
+            Livewire::component('widget-blade',
+                \Jiny\Site\Page\Http\Livewire\WidgetBlade::class);
+            Livewire::component('widget-image',
+                \Jiny\Site\Page\Http\Livewire\WidgetImage::class);
+            Livewire::component('widget-html',
+                \Jiny\Site\Page\Http\Livewire\WidgetHtml::class);
+
+            ##
+            ## admin components
+            Livewire::component('site-admin-template',
+                \Jiny\Site\Page\Http\Livewire\SiteAdminTemplate::class);
 
         });
     }

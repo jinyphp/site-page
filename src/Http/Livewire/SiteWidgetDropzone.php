@@ -10,7 +10,6 @@ use Livewire\Attributes\On;
  */
 class SiteWidgetDropzone extends Component
 {
-
     use \Jiny\Widgets\Http\Trait\DesignMode;
 
     public function render()
