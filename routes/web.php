@@ -41,3 +41,16 @@ Route::middleware(['web'])
 //         Route::get('/api/pages/ui/widget/{id}',[UiWidget::class,"index"]);
 //         Route::post('/api/pages/ui/Widget',[UiWidget::class,"update"]);
 //     });
+
+
+if(function_exists('admin_prefix')) {
+    $prefix = admin_prefix();
+
+    Route::middleware(['web','auth', 'admin'])
+    ->name('admin.site')
+    ->prefix($prefix.'/site')->group(function () {
+
+        Route::get('/template', [\Jiny\Site\Page\Http\Controllers\Admin\AdminSiteTemplate::class,
+            "index"]);
+    });
+}

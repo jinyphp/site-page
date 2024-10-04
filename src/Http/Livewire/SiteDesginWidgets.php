@@ -27,13 +27,13 @@ class SiteDesginWidgets extends Component
 
     public function addWidget($widget)
     {
-        DB::table('site_page_widgets')->insert([
-            'route' => $this->uri,
-            'element' => $widget
-        ]);
+        // DB::table('site_page_widgets')->insert([
+        //     'route' => $this->uri,
+        //     'element' => $widget
+        // ]);
 
         //dump($this->uri);
-        //dd($widget);
+        dd($widget);
 
         $this->dispatch('page-realod');
 

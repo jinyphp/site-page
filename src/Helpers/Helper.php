@@ -2,6 +2,25 @@
 use \Jiny\Html\CTag;
 use Illuminate\Support\Facades\Request;
 
+function widgetList($type=null)
+{
+    if($type) {
+        // type 방법으로 연결
+        // ex) database
+        return [];
+    }
+
+    $path = __DIR__."/../../widgets".DIRECTORY_SEPARATOR."template.json";
+    return json_file_decode($path)['items'];
+}
+
+function widgetTemplates()
+{
+    $path = resource_path("templates");
+    $path .= DIRECTORY_SEPARATOR."template.json";
+    return json_file_decode($path)['items'];
+}
+
 function sitePageWidgets($uri=null)
 {
     if(!$uri) {

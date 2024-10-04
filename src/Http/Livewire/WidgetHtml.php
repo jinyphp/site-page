@@ -13,6 +13,9 @@ use Livewire\Attributes\On;
 
 class WidgetHtml extends Component
 {
+    public $actions = [];
+    public $action_path;
+
     public $uri;
     public $slot;
     public $path;
@@ -21,7 +24,7 @@ class WidgetHtml extends Component
     public $widget = [];
     public $widget_id;
     public $pages = [];
-    public $content = "hello";
+    public $content = "html file";
 
     public $html;
 
@@ -54,14 +57,34 @@ class WidgetHtml extends Component
             $this->html = file_get_contents($this->file);
         }
 
+        // actions 파일 경로 체크
+        $this->action_path = resource_path('actions');
+        $this->action_path .= DIRECTORY_SEPARATOR;
+        $this->action_path .= str_replace('/', DIRECTORY_SEPARATOR, $this->uri);
+        $this->action_path .= ".json";
 
+        // actions 데이터 읽기
+        $this->actions = $this->loadActions();
+
+
+    }
+
+    private function loadActions()
+    {
+        if(file_exists($this->action_path)) {
+            $actions = json_file_decode($this->action_path);
+        } else {
+            $actions = [];
+        }
+
+        return $actions;
     }
 
 
 
     public function render()
     {
-        return view("jiny-site-page::design.widgets.html");
+        return view("jiny-site-page::widgets.html");
     }
 
 
@@ -92,40 +115,56 @@ class WidgetHtml extends Component
 
         if(isset($this->forms['blade'])) {
             file_put_contents($this->file, $this->forms['blade']);
+
+            $this->html = file_get_contents($this->file);
         }
 
 
         // json 수정 저장
-        $json = json_file_decode($this->path.DIRECTORY_SEPARATOR."widgets.json");
-        foreach($json as $i => $item) {
-            if($item['path'] == $this->widget['path']) {
-                break;
-            }
-        }
+        // $json = json_file_decode($this->path.DIRECTORY_SEPARATOR."widgets.json");
+        // foreach($json as $i => $item) {
+        //     if($item['path'] == $this->widget['path']) {
+        //         break;
+        //     }
+        // }
 
         // 파일이름 변경 확인
-        if($this->widget['path'] != $this->forms['filename']) {
-            // 파일명 변경
-            $oldFile = $this->path.DIRECTORY_SEPARATOR.$this->widget['path'];
-            $newFile = $this->path.DIRECTORY_SEPARATOR.$this->forms['filename'];
-            rename($oldFile, $newFile);
-
-            // json 수정 저장
-            $this->widget['path'] = $this->forms['filename'];
-            $json[$i] = $this->widget;
-            json_file_encode($this->path.DIRECTORY_SEPARATOR."widgets.json", $json);
-
-            // Blade
-            $this->file = $newFile;
-            if(is_file($this->file)) {
-                $this->html = file_get_contents($this->file);
-            }
+        if($this->isEditFilename()) {
+            $this->widgetJsonFileUpdate($this->widget_id);
         }
-
-
 
         $this->forms = [];
     }
+
+    private function isEditFilename()
+    {
+        // 파일이름 변경 확인
+        if(isset($this->forms['filename']) &&
+            $this->widget['path'] != $this->forms['filename']) {
+            // 파일명 변경
+            $oldFile = $this->path.DIRECTORY_SEPARATOR.$this->widget['path'];
+            if(file_exists($oldFile)) {
+                $newFile = $this->path.DIRECTORY_SEPARATOR.$this->forms['filename'];
+                rename($oldFile, $newFile);
+
+                // json 수정 저장
+                $this->widget['path'] = $this->forms['filename'];
+            }
+
+            return true;
+        }
+
+        return false;
+    }
+
+    private function widgetJsonFileUpdate($id)
+    {
+        // json 수정 저장
+        $this->actions['widgets'][$id] = $this->widget;
+        //dd($this->action_path);
+        json_file_encode($this->action_path, $this->actions);
+    }
+
 
     public function delete()
     {
@@ -141,16 +180,27 @@ class WidgetHtml extends Component
             }
 
             //$json = $path.DIRECTORY_SEPARATOR."widgets.json";
-            $json = json_file_decode($path.DIRECTORY_SEPARATOR."widgets.json");
+            // $json = json_file_decode($path.DIRECTORY_SEPARATOR."widgets.json");
+            // foreach($json as $i => $item) {
+            //     if($item['path'] == $this->widget['path']) {
+            //         break;
+            //     }
+            // }
+            // unset($json[$i]); //
+
+            // // 다시 저장
+            // json_file_encode($path.DIRECTORY_SEPARATOR."widgets.json", $json);
+            $json = $this->actions['widgets'];
             foreach($json as $i => $item) {
                 if($item['path'] == $this->widget['path']) {
                     break;
                 }
             }
-            unset($json[$i]); //
+            unset($this->actions['widgets'][$i]); //
 
             // 다시 저장
-            json_file_encode($path.DIRECTORY_SEPARATOR."widgets.json", $json);
+            // json_file_encode($path.DIRECTORY_SEPARATOR."widgets.json", $json);
+            json_file_encode($this->action_path, $this->actions);
 
 
             // 페이지 리로드 이벤트 발생
