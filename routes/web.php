@@ -54,3 +54,12 @@ if(function_exists('admin_prefix')) {
             "index"]);
     });
 }
+
+
+
+use Jiny\Site\Page\API\Controllers\SaveContentController;
+
+Route::middleware(['web'])
+->group(function(){
+    Route::post('/api/save-content', [SaveContentController::class, 'save']);
+});

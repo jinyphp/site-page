@@ -13,6 +13,9 @@ use Jiny\Site\Page\Http\Parsedown;
 
 use Livewire\Attributes\On;
 
+/**
+ * 페이지 : 마크다운 위젯
+ */
 class WidgetMarkdown extends Component
 {
     public $actions = [];
@@ -38,7 +41,6 @@ class WidgetMarkdown extends Component
     public function mount()
     {
         $this->init();
-
     }
 
     private function init()
@@ -56,6 +58,9 @@ class WidgetMarkdown extends Component
 
             $this->file = $path.DIRECTORY_SEPARATOR.$this->widget['path'];
             $this->path = $path; //.DIRECTORY_SEPARATOR.$this->widget['path'];
+            if(!is_dir($this->path)) {
+                mkdir($this->path, 0777, true);
+            }
         }
 
         // 파일읽기 및 마크다운 변환
@@ -90,7 +95,6 @@ class WidgetMarkdown extends Component
 
     public function render()
     {
-        //$this->content .= $this->action_path;
         return view("jiny-site-page::widgets.markdown");
     }
 
@@ -241,6 +245,60 @@ class WidgetMarkdown extends Component
         }
 
         return false;
+    }
+
+
+
+    /**
+     * 중재자 패턴 : SiteWidgetLoop 에서 호출되는 이벤트
+     * 사이트 레이아웃 및 정보 수정
+     */
+    #[On('widget-layout-setting')]
+    public function WidgetSetLayout($widget_id)
+    {
+        if(isset($this->widget['key'])
+            && $this->widget['key'] == $widget_id) {
+            $this->widgetSetting();
+        }
+    }
+
+    /**
+     * 팝업: 위젯 정보 설정
+     */
+    public $widgetPopupForm = false;
+    public $setup;
+    public function widgetSetting()
+    {
+        $this->mode = "setting";
+        $this->widgetPopupForm = true;
+        $this->setup = true;
+    }
+
+    public function widgetSettingClose()
+    {
+        $this->mode = null;
+        $this->widgetPopupForm = false;
+        $this->setup = false;
+    }
+
+    public function widgetSettingUpdate()
+    {
+        // 정보읽기
+        $actions = json_file_decode($this->action_path);
+
+        // 위젯키를 기준으로 변경저장
+        if(isset($actions['widgets'])) {
+            foreach($actions['widgets'] as &$item) {
+                if($this->widget['key'] == $item['key']) {
+                    $item = $this->widget;
+                }
+            }
+        }
+
+        // 다시 저장
+        json_file_encode($this->action_path, $actions);
+
+        $this->widgetSettingClose();
     }
 
 

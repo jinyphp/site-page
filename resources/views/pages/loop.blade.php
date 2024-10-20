@@ -1,33 +1,28 @@
 <div>
     <x-loading-indicator/>
 
-    {{-- @if($design)
-
-    @endif --}}
-
-
-
-
-
     @foreach ($widgets as $i => $widget)
+
         @if($design)
+        {{-- 페이지 위젯 추가 --}}
         <x-ui-divider>
             <x-click wire:click="create({{$i}})">
                 <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-plus-circle" viewBox="0 0 16 16">
                     <path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14m0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16"/>
                     <path d="M8 4a.5.5 0 0 1 .5.5v3h3a.5.5 0 0 1 0 1h-3v3a.5.5 0 0 1-1 0v-3h-3a.5.5 0 0 1 0-1h3v-3A.5.5 0 0 1 8 4"/>
                 </svg>
-                {{-- <span>{{$i}}</span> --}}
             </x-click>
         </x-ui-divider>
         @endif
 
         @if($design)
+        {{-- 드레그 드롭을 위하여 패딩 추가 --}}
         <section id="widget" data-pos="{{ $i }}" draggable="true" class="p-4 bg-green-100 mb-2">
         @else
         <section id="widget" data-pos="{{ $i }}">
         @endif
 
+            {{-- 위젯 반복 --}}
             <div wire:key="widget-{{ $i }}">
                 @livewire(
                     $widget['element'],
@@ -49,7 +44,8 @@
                     <span class="pl-2">Remove</span>
                 </x-click>
 
-                <x-click class="btn btn-info btn-sm " wire:click="widgetSetLayout('{{$widget['key']}}')">
+                <x-click class="btn btn-info btn-sm"
+                    wire:click="widgetSetLayout('{{$widget['key']}}')">
                     <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-columns" viewBox="0 0 16 16">
                         <path d="M0 2a1 1 0 0 1 1-1h14a1 1 0 0 1 1 1v12a1 1 0 0 1-1 1H1a1 1 0 0 1-1-1zm8.5 0v8H15V2zm0 9v3H15v-3zm-1-9H1v3h6.5zM1 14h6.5V6H1z"/>
                     </svg>
@@ -260,7 +256,7 @@
 
     {{-- 페이지 변경 및 삭제 --}}
     @if($design)
-        @includeIf("jiny-site-page::design.page_edit")
+        @includeIf("jiny-site-page::pages.edit")
     @endif
 
 

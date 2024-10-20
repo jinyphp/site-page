@@ -2,6 +2,39 @@
 use \Jiny\Html\CTag;
 use Illuminate\Support\Facades\Request;
 
+/**
+ * DB에서 슬라이더 정보를 읽어 옵니다.
+ */
+function site_slider($code)
+{
+    $row = DB::table("site_sliders")->where('code', $code)->first();
+    if($row) {
+        $slider = [];
+        foreach($row as $k => $v) {
+            $slider[$k] = $v;
+        }
+
+        $slider['items'] = [];
+
+        $imgs = DB::table("site_slider_images")
+            ->where('code', $row->code)
+            ->get();
+        if($imgs) {
+            foreach($imgs as $item) {
+                $img = [];
+
+                foreach($item as $k => $v) {
+                    $img[$k] = $v;
+                }
+
+                $slider['items'] []= $img;
+            }
+        }
+
+        return $slider;
+    }
+}
+
 function widgetList($type=null)
 {
     if($type) {

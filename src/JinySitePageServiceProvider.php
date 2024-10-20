@@ -63,10 +63,16 @@ class JinySitePageServiceProvider extends ServiceProvider
             Livewire::component('widget-html',
                 \Jiny\Site\Page\Http\Livewire\WidgetHtml::class);
 
+            Livewire::component('site-widget-slider',
+                \Jiny\Site\Page\Http\Livewire\SiteWidgetSlider::class);
+
             ##
             ## admin components
             Livewire::component('site-admin-template',
                 \Jiny\Site\Page\Http\Livewire\SiteAdminTemplate::class);
+
+            Livewire::component('site-page-html',
+                \Jiny\Site\Page\Http\Livewire\SitePageHtml::class);
 
         });
     }

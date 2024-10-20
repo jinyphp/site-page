@@ -55,6 +55,9 @@ class WidgetImage extends Component
 
             //$this->file = $path.DIRECTORY_SEPARATOR.$this->widget['path'];
             $this->path = $path; //.DIRECTORY_SEPARATOR.$this->widget['path'];
+            if(!is_dir($this->path)) {
+                mkdir($this->path, 0777, true);
+            }
         }
 
 

@@ -21,6 +21,7 @@ class PageDesignMode extends WireTablePopupForms
         $this->setVisit($this);
 
         //xTheme()->setTheme("admin.sidebar");
+
     }
 
 

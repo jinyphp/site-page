@@ -27,6 +27,33 @@
                 ->setWidth("standard")
             !!}
         </div>
+
+        {{-- <x-form-hor>
+            <x-form-label>타이틀</x-form-label>
+            <x-form-item>
+                {!! xInputText()
+                    ->setWire('model.defer',"forms.title")
+                !!}
+            </x-form-item>
+        </x-form-hor>
+
+        <x-form-hor>
+            <x-form-label>description</x-form-label>
+            <x-form-item>
+                {!! xTextarea()
+                    ->setWire('model.defer',"forms.description")
+                !!}
+            </x-form-item>
+        </x-form-hor>
+
+        <x-form-hor>
+            <x-form-label>keyword</x-form-label>
+            <x-form-item>
+                {!! xTextarea()
+                    ->setWire('model.defer',"forms.keyword")
+                !!}
+            </x-form-item>
+        </x-form-hor> --}}
         @endif
 
         <div>{{$message}}</div>

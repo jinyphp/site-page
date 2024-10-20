@@ -1,4 +1,5 @@
 <article>
+
     @if(!$design)
     {{-- 일반모드 --}}
     <div>

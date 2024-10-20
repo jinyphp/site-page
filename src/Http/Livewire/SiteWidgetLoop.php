@@ -7,9 +7,11 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Request;
 use Illuminate\Support\Facades\View;
 use Illuminate\Support\Facades\Auth;
-
 use Livewire\Attributes\On;
 
+/**
+ * Page Widget Loop
+ */
 class SiteWidgetLoop extends Component
 {
     public $actions;
@@ -30,10 +32,14 @@ class SiteWidgetLoop extends Component
 
     public function mount()
     {
+        Action();
+
+        // 1. 엑션정보 읽기
         if(!isset($this->actions['widgets'])) {
             $this->actions = $this->loadActions();
         }
 
+        // 2. widgets 정보읽기
         if(isset($this->actions['widgets'])) {
             $this->widgets = $this->actions['widgets'];
         } else {
@@ -70,13 +76,12 @@ class SiteWidgetLoop extends Component
 
         return $actions;
 
-        //dd($widgets);
-        //return $widgets;
+
     }
 
     public function render()
     {
-        return view("jiny-site-page::design.loop",[
+        return view("jiny-site-page::pages.loop",[
         ]);
     }
 
@@ -384,6 +389,29 @@ class SiteWidgetLoop extends Component
         // 페이지 리로드 이벤트 발생
         // 현재 목록을 삭제하였기 때문에, 페이지 전체 리로드가 필요함
         $this->dispatch('page-realod');
+    }
+
+
+    /**
+     * HotKey: page edit
+     */
+    #[On('page-mode')]
+    public function actionMode($mode=null)
+    {
+        if($this->design) {
+            $this->design = false;
+            $this->popupForms = false;
+
+            $this->editMode = false;
+        } else {
+            $this->design = "page";
+            $this->popupForms = true;
+
+            $this->editMode = true;
+            $this->forms['uri'] = $this->uri;
+        }
+
+        $this->message = null;
     }
 
 }
