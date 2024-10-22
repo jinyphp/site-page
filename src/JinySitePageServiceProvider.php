@@ -74,6 +74,9 @@ class JinySitePageServiceProvider extends ServiceProvider
             Livewire::component('site-page-html',
                 \Jiny\Site\Page\Http\Livewire\SitePageHtml::class);
 
+            Livewire::component('site-page-blade',
+                \Jiny\Site\Page\Http\Livewire\SitePageBlade::class);
+
         });
     }
 
