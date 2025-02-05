@@ -1,12 +1,6 @@
 <article>
-    @if(!$design)
-    {{-- 일반모드 --}}
-    <div>
-        {!! $content !!}
-    </div>
 
-    @else
-    {{-- 디자인 모드 --}}
+    @if($design)
     <div class="card mb-3">
         @if(!$editable)
         <div class="card-header">
@@ -41,6 +35,17 @@
 
         @if($editable)
         {{-- 수정모드 --}}
+        <div class="card-header">
+            <x-flex-between class="gap-4 mt-2">
+                <div>
+                    {{-- <button class="btn btn-danger btn-sm" wire:click="delete">삭제</button> --}}
+                </div>
+                <div>
+                    <button class="btn btn-secondary btn-sm" wire:click="cencel">취소</button>
+                    <button class="btn btn-info btn-sm" wire:click="update">변경</button>
+                </div>
+            </x-flex-between>
+        </div>
         <div class="card-body">
             <div class="mb-3">
                 <label class="form-label">파일이름</label>
@@ -55,29 +60,21 @@
                 !!}
             </div>
         </div>
-        <div class="card-footer">
-            <x-flex-between class="gap-4 mt-2">
-                <div>
-                    <button class="btn btn-danger btn-sm" wire:click="delete">삭제</button>
-                </div>
-                <div>
-                    <button class="btn btn-secondary btn-sm" wire:click="cencel">취소</button>
-                    <button class="btn btn-info btn-sm" wire:click="update">수정</button>
-                </div>
-            </x-flex-between>
-        </div>
+        {{-- <div class="card-footer">
+
+        </div> --}}
         @else
         {{-- 편집 모드 --}}
         <div class="card-body">
             <div>
-                {!! $content !!}
+                {{-- 태그 제거 --}}
+                {!! clean($content) !!}
             </div>
         </div>
         @endif
 
     </div>
     @endif
-
 
 
     <!-- 팝업 데이터 수정창 -->
@@ -109,4 +106,5 @@
         </x-slot>
     </x-wire-dialog-modal>
     @endif
+
 </article>

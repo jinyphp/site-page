@@ -14,7 +14,7 @@ class PostsController extends ResourceController
         $this->setVisit($this);
 
         ## 테이블 정보
-        $this->actions['table'] = "site_posts";
+        $this->actions['table']['name'] = "site_posts";
 
         $this->actions['view_filter'] = "pages::admin.posts.filter";
         $this->actions['view_list'] = "pages::admin.posts.list";

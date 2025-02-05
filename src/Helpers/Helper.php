@@ -43,14 +43,31 @@ function widgetList($type=null)
         return [];
     }
 
-    $path = __DIR__."/../../widgets".DIRECTORY_SEPARATOR."template.json";
+    $path = __DIR__."/../../widgets".DIRECTORY_SEPARATOR."raws.json";
     return json_file_decode($path)['items'];
 }
 
-function widgetTemplates()
+function widgetTemplates($type=null)
 {
+    $db = DB::table('site_widgets');
+    if($type) {
+        $db->where('type', $type);
+    }
+    $rows = $db->get();
+    //$rows = DB::table('site_widgets')->get();
+    $widgets = [];
+    foreach($rows as $row) {
+        $temp = [];
+        foreach($row as $key => $value) {
+            $temp[$key] = $value;
+        }
+        $widgets[$row->id] = $temp;
+    }
+
+    return $widgets;
+
     $path = resource_path("templates");
-    $path .= DIRECTORY_SEPARATOR."template.json";
+    $path .= DIRECTORY_SEPARATOR."widgets.json";
     return json_file_decode($path)['items'];
 }
 
@@ -123,3 +140,8 @@ function xDirectory($tree)
     return $ul;
 }
 
+if (!function_exists('clean')) {
+    function clean($content) {
+        return strip_tags($content, '<p><br><strong><em><ul><li><ol><h1><h2><h3><h4><h5><h6><blockquote><code><pre>');
+    }
+}

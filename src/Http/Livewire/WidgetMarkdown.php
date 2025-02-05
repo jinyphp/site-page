@@ -95,7 +95,12 @@ class WidgetMarkdown extends Component
 
     public function render()
     {
-        return view("jiny-site-page::widgets.markdown");
+        if($this->design) {
+            $viewFile = "jiny-site-page::widgets.markdown.design";
+        } else {
+            $viewFile = "jiny-site-page::widgets.markdown.content";
+        }
+        return view($viewFile);
     }
 
 
@@ -184,40 +189,40 @@ class WidgetMarkdown extends Component
 
 
 
-    public function delete()
-    {
-        $this->mode = null;
-        $this->editable = false;
+    // public function delete()
+    // {
+    //     $this->mode = null;
+    //     $this->editable = false;
 
-        if(isset($this->widget['path'])) {
-            $path = resource_path('www');
+    //     if(isset($this->widget['path'])) {
+    //         $path = resource_path('www');
 
-            if($this->slot) {
-                $path = $path.DIRECTORY_SEPARATOR.$this->slot;
-                $path .= DIRECTORY_SEPARATOR.str_replace('/', DIRECTORY_SEPARATOR, $this->uri);
-            }
+    //         if($this->slot) {
+    //             $path = $path.DIRECTORY_SEPARATOR.$this->slot;
+    //             $path .= DIRECTORY_SEPARATOR.str_replace('/', DIRECTORY_SEPARATOR, $this->uri);
+    //         }
 
-            //$json = $path.DIRECTORY_SEPARATOR."widgets.json";
-            // $json = json_file_decode($path.DIRECTORY_SEPARATOR."widgets.json");
-            $json = $this->actions['widgets'];
-            foreach($json as $i => $item) {
-                if($item['path'] == $this->widget['path']) {
-                    break;
-                }
-            }
-            unset($this->actions['widgets'][$i]); //
+    //         //$json = $path.DIRECTORY_SEPARATOR."widgets.json";
+    //         // $json = json_file_decode($path.DIRECTORY_SEPARATOR."widgets.json");
+    //         $json = $this->actions['widgets'];
+    //         foreach($json as $i => $item) {
+    //             if($item['path'] == $this->widget['path']) {
+    //                 break;
+    //             }
+    //         }
+    //         unset($this->actions['widgets'][$i]); //
 
-            // 다시 저장
-            // json_file_encode($path.DIRECTORY_SEPARATOR."widgets.json", $json);
-            json_file_encode($this->action_path, $this->actions);
+    //         // 다시 저장
+    //         // json_file_encode($path.DIRECTORY_SEPARATOR."widgets.json", $json);
+    //         json_file_encode($this->action_path, $this->actions);
 
 
-            // 페이지 리로드 이벤트 발생
-            // 현재 목록을 삭제하였기 때문에, 페이지 전체 리로드가 필요함
-            $this->dispatch('page-realod');
-        }
+    //         // 페이지 리로드 이벤트 발생
+    //         // 현재 목록을 삭제하였기 때문에, 페이지 전체 리로드가 필요함
+    //         $this->dispatch('page-realod');
+    //     }
 
-    }
+    // }
 
 
     private function getSlot()
@@ -299,6 +304,32 @@ class WidgetMarkdown extends Component
         json_file_encode($this->action_path, $actions);
 
         $this->widgetSettingClose();
+    }
+
+    /**
+     * 위젯 self 삭제합니다.
+     */
+    public function remove($key)
+    {
+        $slot = www_slot();
+        $filePath = resource_path('www/'.$slot);
+        $filename = $filePath.$this->widget['route'].DIRECTORY_SEPARATOR.$this->widget['path'];
+        unlink($filename);
+
+        $temp = [];
+        foreach($this->actions['widgets'] as $i => $item) {
+            if($item['key'] == $key) {
+                continue;
+            }
+            $temp []= $item;
+        }
+
+        $this->actions['widgets'] = $temp;
+        json_file_encode($this->action_path, $this->actions); // 다시저장
+
+        // 페이지 리로드 이벤트 발생
+        // 현재 목록을 삭제하였기 때문에, 페이지 전체 리로드가 필요함
+        $this->dispatch('page-realod');
     }
 
 

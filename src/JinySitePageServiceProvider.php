@@ -49,33 +49,49 @@ class JinySitePageServiceProvider extends ServiceProvider
             ## Site Widget Page 관리
             Livewire::component('site-design-widgets',
                 \Jiny\Site\Page\Http\Livewire\SiteDesginWidgets::class);
-            Livewire::component('site-widget-loop', \Jiny\Site\Page\Http\Livewire\SiteWidgetLoop::class);
+            Livewire::component('site-widget-loop',
+                \Jiny\Site\Page\Http\Livewire\SiteWidgetLoop::class);
             Livewire::component('site-widget-dropzone',
                 \Jiny\Site\Page\Http\Livewire\SiteWidgetDropzone::class);
+            Livewire::component('site-widget-add',
+                \Jiny\Site\Page\Http\Livewire\SiteWidgetAdd::class);
+            Livewire::component('site-widget-create',
+                \Jiny\Site\Page\Http\Livewire\SiteWidgetCreate::class);
+            Livewire::component('site-page-edit',
+                \Jiny\Site\Page\Http\Livewire\SitePageEdit::class);
+            Livewire::component('site-widget-move',
+                \Jiny\Site\Page\Http\Livewire\SiteWidgetMove::class);
 
-            ## Widgets
-            Livewire::component('widget-markdown',
+
+            ## SiteWidgets
+            // 위젯loop 에서 사용되는 컴포넌트
+            Livewire::component('site-widget-markdown',
                 \Jiny\Site\Page\Http\Livewire\WidgetMarkdown::class);
-            Livewire::component('widget-blade',
-                \Jiny\Site\Page\Http\Livewire\WidgetBlade::class);
-            Livewire::component('widget-image',
-                \Jiny\Site\Page\Http\Livewire\WidgetImage::class);
-            Livewire::component('widget-html',
+            Livewire::component('site-widget-html',
                 \Jiny\Site\Page\Http\Livewire\WidgetHtml::class);
-
+            Livewire::component('site-widget-blade',
+                \Jiny\Site\Page\Http\Livewire\WidgetBlade::class);
+            Livewire::component('site-widget-image',
+                \Jiny\Site\Page\Http\Livewire\WidgetImage::class);
             Livewire::component('site-widget-slider',
                 \Jiny\Site\Page\Http\Livewire\SiteWidgetSlider::class);
+
+            ## 페이지 컴포넌트
+            Livewire::component('site-page-html',
+                \Jiny\Site\Page\Http\Livewire\SitePageHtml::class);
+
+            Livewire::component('site-page-blade',
+                \Jiny\Site\Page\Http\Livewire\SitePageBlade::class);
 
             ##
             ## admin components
             Livewire::component('site-admin-template',
                 \Jiny\Site\Page\Http\Livewire\SiteAdminTemplate::class);
 
-            Livewire::component('site-page-html',
-                \Jiny\Site\Page\Http\Livewire\SitePageHtml::class);
 
-            Livewire::component('site-page-blade',
-                \Jiny\Site\Page\Http\Livewire\SitePageBlade::class);
+
+
+
 
         });
     }

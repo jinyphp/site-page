@@ -13,7 +13,7 @@ class PostsController extends ResourceController
         $this->setVisit($this);
 
         ## 테이블 정보
-        $this->actions['table'] = "site_posts";
+        $this->actions['table']['name'] = "site_posts";
 
         $this->actions['view_filter'] = "jiny-site-page::admin.posts.filter";
         $this->actions['view_list'] = "jiny-site-page::admin.posts.list";

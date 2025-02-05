@@ -3,21 +3,25 @@
         {
             "code":"markdown",
             "title":"Markdown",
+            "description":"마크다운 문서를 작성합니다.",
             "image":""
         },
         {
             "code":"blade",
             "title":"PHP Blade",
+            "description":"PHP 블레이드 문서를 작성합니다.",
             "image":""
         },
         {
             "code":"html",
             "title":"Html",
+            "description":"HTML 문서를 작성합니다.",
             "image":""
         },
         {
             "code":"image",
-            "title":"Images",
+            "title":"Image",
+            "description":"이미지 갤러리를 관리합니다.",
             "image":""
         }
     ]

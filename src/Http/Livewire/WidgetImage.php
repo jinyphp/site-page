@@ -11,6 +11,9 @@ use Illuminate\Support\Facades\Auth;
 use Livewire\WithFileUploads;
 use Livewire\Attributes\On;
 
+/**
+ * 이미지 위젯
+ */
 class WidgetImage extends Component
 {
     public $actions = [];
@@ -27,10 +30,12 @@ class WidgetImage extends Component
 
     public $widget = [];
     public $widget_id;
-    public $pages = [];
-    public $content = "hello";
+    //public $pages = [];
+    //public $content = "hello";
 
     public $images;
+
+    public $message;
 
     public $mode;
     public $editable = false;
@@ -75,11 +80,13 @@ class WidgetImage extends Component
         // $this->image = "/".$this->uri."/".$this->widget['path'];
         // 이미지 경로 다시 생성
         $this->images = [];
-        if(isset($this->widget['path'])) {
-            foreach($this->widget['path'] as $i => $item) {
+        if(isset($this->widget['files'])) {
+            foreach($this->widget['files'] as $i => $item) {
                 $this->images[$i] = "/".$this->uri."/".$item;
             }
         }
+
+        $this->widget['view']['design'] = "jiny-site-page::widgets.image.design";
 
     }
 
@@ -98,13 +105,15 @@ class WidgetImage extends Component
 
     public function render()
     {
-        return view("jiny-site-page::widgets.image");
+        $viewFile = "jiny-site-page::widgets.image.layout";
+        return view($viewFile);
     }
 
 
     public function create()
     {
         $this->editable = true;
+        $this->_id = null;
     }
 
     public function store()
@@ -117,32 +126,19 @@ class WidgetImage extends Component
             $this->upload_move = $this->uri; // "/images/widgets/".$this->uri; // 슬롯 안쪽으로 이동
             $this->fileUpload($this->forms, $this->upload_path);
 
-            // json 수정 저장
-            // $json = json_file_decode($this->path.DIRECTORY_SEPARATOR."widgets.json");
-            $json = $this->actions['widgets'];
-            $filename = basename($this->forms['image']);
-            foreach($this->widget['path'] as $key => $item) {
-                // 마지막 key 값을 얻기 위해서
+            if(!isset($this->widget['files'])) {
+                $this->widget['files'] = [];
             }
-            $key++;
-            $this->widget['path'][$key] = $filename;
-
-            //dd($this->widget);
+            $this->widget['files'][] = basename($this->forms['image']);
 
             $id = $this->widget_id;
-            //dump($id);
-            //dump($this->widget);
             $this->actions['widgets'][$id] = $this->widget;
-            //dd($json);
             json_file_encode($this->action_path, $this->actions);
-
-
-
 
             // 이미지 경로 다시 생성
             $this->images = [];
-            if(isset($this->widget['path'])) {
-                foreach($this->widget['path'] as $i => $item) {
+            if(isset($this->widget['files'])) {
+                foreach($this->widget['files'] as $i => $item) {
                     $this->images[$i] = "/".$this->uri."/".$item;
                 }
             }
@@ -156,26 +152,13 @@ class WidgetImage extends Component
     {
         $this->editable = true;
         $this->_id = $i;
-
-        $this->forms['image'] = $this->widget['path'][$i];
-
-        //dd($this->_id);
+        $this->forms['image'] = $this->widget['files'][$i];
     }
-
-    // public function modify()
-    // {
-    //     $this->mode = "modify";
-    //     $this->editable = true;
-
-    //     $this->forms['filename'] = $this->widget['path'];
-
-    // }
 
     public function cencel()
     {
         $this->mode = null;
         $this->editable = false;
-
         $this->forms = [];
     }
 
@@ -196,9 +179,9 @@ class WidgetImage extends Component
             $filename = basename($this->forms['image']);
 
             $_id = $this->_id;
-            if($this->widget['path'][$_id] != $filename) {
-                unlink($this->path.DIRECTORY_SEPARATOR.$this->widget['path'][$_id]);
-                $this->widget['path'][$_id] = $filename;
+            if($this->widget['files'][$_id] != $filename) {
+                unlink($this->path.DIRECTORY_SEPARATOR.$this->widget['files'][$_id]);
+                $this->widget['files'][$_id] = $filename;
             }
 
             $id = $this->widget_id;
@@ -207,8 +190,8 @@ class WidgetImage extends Component
 
             // 이미지 경로 다시 생성
             $this->images = [];
-            if(isset($this->widget['path'])) {
-                foreach($this->widget['path'] as $i => $item) {
+            if(isset($this->widget['files'])) {
+                foreach($this->widget['files'] as $i => $item) {
                     $this->images[$i] = "/".$this->uri."/".$item;
                 }
             }
@@ -223,13 +206,12 @@ class WidgetImage extends Component
         $this->editable = false;
 
         // json 수정 저장
-        //$json = json_file_decode($this->path.DIRECTORY_SEPARATOR."widgets.json");
         $json = $this->actions['widgets'];
         $filename = basename($this->forms['image']);
 
         $_id = $this->_id;
-        unlink($this->path.DIRECTORY_SEPARATOR.$this->widget['path'][$_id]);
-        unset($this->widget['path'][$_id]);
+        unlink($this->path.DIRECTORY_SEPARATOR.$this->widget['files'][$_id]);
+        unset($this->widget['files'][$_id]);
 
         $id = $this->widget_id;
         $this->actions['widgets'][$id] = $this->widget;
@@ -238,15 +220,15 @@ class WidgetImage extends Component
 
         // 이미지 경로 다시 생성
         $this->images = [];
-        if(isset($this->widget['path'])) {
-            foreach($this->widget['path'] as $i => $item) {
+        if(isset($this->widget['files'])) {
+            foreach($this->widget['files'] as $i => $item) {
                 $this->images[$i] = "/".$this->uri."/".$item;
             }
         }
 
         $this->forms = [];
+        $this->_id = null;
         return true;
-
     }
 
 
@@ -277,21 +259,56 @@ class WidgetImage extends Component
         return false;
     }
 
-    public function remove()
+    // public function remove()
+    // {
+    //     //$this->mode = null;
+    //     //$this->editable = false;
+
+    //     $_id = $this->widget_id;
+    //     //unset($this->widget[$_id]); //
+    //     unset($this->actions['widgets'][$_id]);
+
+    //     //dump($_id);
+    //     //dump($this->widget);
+    //     //dd($this->actions['widgets']);
+
+    //     // 다시 저장
+    //     json_file_encode($this->action_path, $this->actions);
+
+    //     // 페이지 리로드 이벤트 발생
+    //     // 현재 목록을 삭제하였기 때문에, 페이지 전체 리로드가 필요함
+    //     $this->dispatch('page-realod');
+    // }
+
+    /**
+     * 위젯 self 삭제합니다.
+     */
+    public function remove($key)
     {
-        //$this->mode = null;
-        //$this->editable = false;
+        //dd($this->widget);
 
-        $_id = $this->widget_id;
-        //unset($this->widget[$_id]); //
-        unset($this->actions['widgets'][$_id]);
+        $slot = www_slot();
+        $filePath = resource_path('www/'.$slot);
+        if(isset($this->widget['files'])) {
+            foreach($this->widget['files'] as $file) {
+                $filename = $filePath.$this->widget['route'].DIRECTORY_SEPARATOR.$file;
+                if(file_exists($filename)) {
+                    unlink($filename);
+                }
+            }
+        }
 
-        //dump($_id);
-        //dump($this->widget);
-        //dd($this->actions['widgets']);
 
-        // 다시 저장
-        json_file_encode($this->action_path, $this->actions);
+        $temp = [];
+        foreach($this->actions['widgets'] as $i => $item) {
+            if($item['key'] == $key) {
+                continue;
+            }
+            $temp []= $item;
+        }
+
+        $this->actions['widgets'] = $temp;
+        json_file_encode($this->action_path, $this->actions); // 다시저장
 
         // 페이지 리로드 이벤트 발생
         // 현재 목록을 삭제하였기 때문에, 페이지 전체 리로드가 필요함

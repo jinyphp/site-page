@@ -15,7 +15,7 @@ class FilesController extends ResourceController
 
 
         ## 테이블 정보
-        //$this->actions['table'] = "site_posts";
+        //$this->actions['table']['name'] = "site_posts";
 
         $this->actions['view_main'] = "pages::admin.lists.main";
 

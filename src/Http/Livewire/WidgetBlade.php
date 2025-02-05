@@ -94,7 +94,8 @@ class WidgetBlade extends Component
 
     public function render()
     {
-        return view("jiny-site-page::widgets.blade");
+        $viewFile = "jiny-site-page::widgets.blade.layout";
+        return view($viewFile);
     }
 
 
@@ -252,6 +253,32 @@ class WidgetBlade extends Component
         }
 
         return false;
+    }
+
+    /**
+     * 위젯 self 삭제합니다.
+     */
+    public function remove($key)
+    {
+        $slot = www_slot();
+        $filePath = resource_path('www/'.$slot);
+        $filename = $filePath.$this->widget['route'].DIRECTORY_SEPARATOR.$this->widget['path'];
+        unlink($filename);
+
+        $temp = [];
+        foreach($this->actions['widgets'] as $i => $item) {
+            if($item['key'] == $key) {
+                continue;
+            }
+            $temp []= $item;
+        }
+
+        $this->actions['widgets'] = $temp;
+        json_file_encode($this->action_path, $this->actions); // 다시저장
+
+        // 페이지 리로드 이벤트 발생
+        // 현재 목록을 삭제하였기 때문에, 페이지 전체 리로드가 필요함
+        $this->dispatch('page-realod');
     }
 
 
